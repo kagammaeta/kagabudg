@@ -1,0 +1,1659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KA Treasury</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500&family=IBM+Plex+Sans:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --crimson:#7D2535;--crimson-2:#5C1A26;--crimson-3:#3D1019;
+  --crimson-pale:#F8F0F1;--crimson-tint:#F2E3E5;
+  --gold:#B89A4A;--gold-2:#8A7030;--gold-pale:#FAF6EC;
+  --bg:#F5F3EE;--bg-2:#EDEAE2;--surface:#FFFFFF;
+  --border:rgba(0,0,0,0.08);--border-strong:rgba(0,0,0,0.14);
+  --text:#1A1714;--text-2:#5A5550;--text-3:#9A9590;
+  --green:#1E6B45;--green-bg:#EAF4EE;
+  --red:#8B2020;--red-bg:#FAECEC;
+  --amber:#7A5010;--amber-bg:#FBF3E3;
+  --teal:#176B5E;--teal-bg:#E5F4F1;
+  --font-display:'Playfair Display',Georgia,serif;
+  --font-body:'IBM Plex Sans',system-ui,sans-serif;
+  --font-mono:'IBM Plex Mono',monospace;
+  --r-sm:6px;--r-md:10px;--r-lg:14px;--r-xl:20px;
+}
+html,body{height:100%;font-family:var(--font-body);background:var(--bg);color:var(--text);font-size:13px;line-height:1.55;-webkit-font-smoothing:antialiased}
+
+/* ── OVERLAYS ── */
+.overlay{position:fixed;inset:0;background:rgba(26,23,20,.55);display:flex;align-items:center;justify-content:center;z-index:1000;backdrop-filter:blur(3px)}
+.modal-box{background:var(--surface);border-radius:var(--r-xl);border:1px solid var(--border);width:340px;padding:2.5rem 2rem;text-align:center}
+.modal-monogram{font-family:var(--font-display);font-size:44px;color:var(--crimson);line-height:1;margin-bottom:1rem}
+.modal-box h2{font-family:var(--font-display);font-size:20px;font-weight:600;color:var(--crimson-2);margin-bottom:.3rem}
+.modal-box p{font-size:12px;color:var(--text-3);margin-bottom:1.5rem}
+.modal-box input[type=password]{width:100%;font-family:var(--font-body);font-size:13px;padding:10px 14px;border:1px solid var(--border-strong);border-radius:var(--r-md);background:var(--bg);color:var(--text);text-align:center;letter-spacing:.15em;margin-bottom:.5rem;transition:border-color .15s,box-shadow .15s}
+.modal-box input[type=password]:focus{outline:none;border-color:var(--crimson);box-shadow:0 0 0 3px rgba(125,37,53,.12)}
+.modal-err{font-size:11px;color:var(--red);min-height:16px;margin-bottom:.75rem}
+.modal-actions{display:flex;gap:8px;justify-content:center}
+
+/* ── SETTINGS PANEL ── */
+.settings-panel{position:fixed;inset:0;z-index:900;display:flex;justify-content:flex-end}
+.settings-scrim{position:absolute;inset:0;background:rgba(26,23,20,.4);backdrop-filter:blur(2px)}
+.settings-drawer{position:relative;z-index:1;width:480px;max-width:100%;background:var(--surface);height:100%;overflow-y:auto;display:flex;flex-direction:column;box-shadow:-8px 0 40px rgba(0,0,0,.12);animation:slideIn .25s ease}
+.settings-head{padding:1.5rem 1.75rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--surface);z-index:2}
+.settings-head h2{font-family:var(--font-display);font-size:18px;font-weight:500;color:var(--crimson-2)}
+.settings-close{background:none;border:1px solid var(--border-strong);border-radius:var(--r-md);width:32px;height:32px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-3);font-size:16px;transition:all .15s}
+.settings-close:hover{border-color:var(--crimson);color:var(--crimson)}
+.settings-body{padding:1.75rem;flex:1}
+.settings-section{margin-bottom:2rem}
+.settings-section-title{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--text-3);font-weight:500;margin-bottom:1rem;padding-bottom:.5rem;border-bottom:1px solid var(--border)}
+.settings-sem{background:var(--bg);border-radius:var(--r-lg);padding:1.25rem;margin-bottom:.75rem;border:1px solid var(--border)}
+.settings-sem-label{font-size:11px;font-weight:500;color:var(--text-2);margin-bottom:.75rem;display:flex;align-items:center;gap:8px}
+.sem-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.sem-dot-spring{background:var(--crimson)}.sem-dot-summer{background:var(--gold)}.sem-dot-fall{background:var(--teal)}
+.settings-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.settings-field label{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--text-3);margin-bottom:5px}
+.settings-field input[type=date]{width:100%;font-family:var(--font-body);font-size:12px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--r-md);background:var(--surface);color:var(--text);transition:border-color .15s,box-shadow .15s;cursor:pointer}
+.settings-field input[type=date]:focus{outline:none;border-color:var(--crimson);box-shadow:0 0 0 2px rgba(125,37,53,.1)}
+.settings-field input[type=date]::-webkit-calendar-picker-indicator{opacity:.5;cursor:pointer}
+.settings-err{font-size:11px;color:var(--red);margin-top:.4rem;display:none}
+.settings-foot{padding:1.25rem 1.75rem;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;position:sticky;bottom:0;background:var(--surface)}
+.settings-info{background:var(--crimson-pale);border:1px solid var(--crimson-tint);border-radius:var(--r-md);padding:.75rem 1rem;font-size:11px;color:var(--crimson-2);line-height:1.6;margin-bottom:1.5rem}
+
+/* ── SIDEBAR ── */
+.layout{display:flex;min-height:100vh}
+.sidebar{width:220px;flex-shrink:0;background:var(--crimson-3);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sidebar-brand{padding:1.5rem 1.25rem 1rem;border-bottom:1px solid rgba(255,255,255,.08)}
+.sidebar-monogram{font-family:var(--font-display);font-size:28px;color:var(--gold);font-style:italic}
+.sidebar-title{font-family:var(--font-display);font-size:13px;font-weight:500;color:rgba(230,215,185,.85);margin-top:2px;letter-spacing:.01em}
+.sidebar-sub{font-size:10px;color:rgba(180,165,140,.5);letter-spacing:.08em;text-transform:uppercase;margin-top:2px}
+.sidebar-nav{padding:.75rem;flex:1}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:var(--r-md);color:rgba(210,195,165,.6);font-size:12px;font-weight:400;cursor:pointer;border:none;background:none;width:100%;text-align:left;transition:all .15s;letter-spacing:.01em;margin-bottom:2px}
+.nav-item:hover{color:rgba(230,215,185,.9);background:rgba(255,255,255,.06)}
+.nav-item.active{color:var(--gold);background:rgba(184,154,74,.12);font-weight:500}
+.nav-icon{width:16px;height:16px;opacity:.65;flex-shrink:0}
+.nav-item.active .nav-icon{opacity:1}
+.nav-divider{height:1px;background:rgba(255,255,255,.06);margin:8px 0}
+.nav-label{font-size:9px;text-transform:uppercase;letter-spacing:.12em;color:rgba(180,165,140,.4);padding:8px 12px 4px}
+.sidebar-footer{padding:1rem .75rem;border-top:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;gap:6px}
+.sidebar-footer-btn{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:var(--r-md);border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);cursor:pointer;transition:all .15s;width:100%}
+.sidebar-footer-btn:hover{background:rgba(255,255,255,.08)}
+.lock-dot{width:7px;height:7px;border-radius:50%;background:#E55;flex-shrink:0;transition:background .3s}
+.lock-dot.unlocked{background:#4C4}
+.footer-btn-text{font-size:11px;color:rgba(210,195,165,.65)}
+
+/* ── SEMESTER SWITCHER ── */
+.sem-switcher{display:flex;gap:2px;background:var(--bg-2);border-radius:var(--r-md);padding:3px}
+.sem-tab{font-family:var(--font-body);font-size:11px;padding:5px 14px;border-radius:var(--r-sm);border:none;background:none;color:var(--text-3);cursor:pointer;font-weight:400;transition:all .15s;white-space:nowrap;position:relative}
+.sem-tab.active{background:var(--crimson);color:#fff;font-weight:500}
+.sem-tab.is-now:not(.active)::after{content:'·';position:absolute;bottom:2px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--crimson);line-height:1}
+.sem-tab:not(.active):hover{color:var(--text-2)}
+
+/* ── TOPBAR ── */
+.main{flex:1;overflow-x:hidden}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 2rem;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;gap:12px}
+.topbar-left{display:flex;align-items:center;gap:12px;flex-shrink:0}
+.topbar-title{font-family:var(--font-display);font-size:17px;font-weight:500;color:var(--crimson-2);white-space:nowrap}
+.sem-badge{font-size:10px;padding:3px 9px;border-radius:20px;font-weight:500;letter-spacing:.04em;white-space:nowrap}
+.sem-badge-spring{background:var(--crimson-tint);color:var(--crimson-2)}
+.sem-badge-summer{background:var(--gold-pale);color:var(--gold-2)}
+.sem-badge-fall{background:var(--teal-bg);color:var(--teal)}
+.topbar-center{flex:1;display:flex;justify-content:center}
+.topbar-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.snap-input{font-family:var(--font-body);font-size:12px;padding:6px 10px;border:1px solid var(--border-strong);border-radius:var(--r-md);background:var(--bg);color:var(--text);width:150px}
+.snap-input:focus{outline:none;border-color:var(--crimson)}
+.snap-input::placeholder{color:var(--text-3)}
+
+/* ── CONTENT ── */
+.content{padding:2rem;max-width:1280px;margin:0 auto}
+.page{display:none}.page.active{display:block}
+
+/* ── BUTTONS ── */
+.btn{font-family:var(--font-body);font-size:11px;font-weight:500;padding:6px 14px;border-radius:var(--r-md);border:1px solid;cursor:pointer;transition:all .15s;letter-spacing:.02em;white-space:nowrap}
+.btn-primary{background:var(--crimson);border-color:var(--crimson);color:#fff}
+.btn-primary:hover{background:var(--crimson-2);border-color:var(--crimson-2)}
+.btn-secondary{background:transparent;border-color:var(--border-strong);color:var(--text-2)}
+.btn-secondary:hover{border-color:var(--crimson);color:var(--crimson)}
+.btn-ghost{background:transparent;border-color:transparent;color:var(--text-3)}
+.btn-ghost:hover{color:var(--text);border-color:var(--border)}
+.btn-danger{background:transparent;border-color:var(--red-bg);color:var(--red)}
+.btn-danger:hover{background:var(--red-bg)}
+.btn-teal{background:transparent;border-color:rgba(23,107,94,.3);color:var(--teal)}
+.btn-teal:hover{background:var(--teal-bg)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn-sm{font-size:10px;padding:4px 10px}
+
+/* ── CARDS ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden}
+.card-head{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.card-title{font-family:var(--font-display);font-size:14px;font-weight:500;color:var(--crimson-2)}
+.card-meta{font-size:10px;color:var(--text-3);text-transform:uppercase;letter-spacing:.08em}
+.card-body{padding:1.25rem 1.5rem}
+
+/* ── STATS ── */
+.stat-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:1.5rem}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.25rem 1.5rem;animation:fadeUp .35s ease both}
+.stat-card:nth-child(1){animation-delay:.04s}.stat-card:nth-child(2){animation-delay:.08s}
+.stat-card:nth-child(3){animation-delay:.12s}.stat-card:nth-child(4){animation-delay:.16s}
+.stat-label{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--text-3);margin-bottom:.6rem;font-weight:500}
+.stat-value{font-family:var(--font-display);font-size:26px;font-weight:600;line-height:1;letter-spacing:-.01em}
+.stat-sub{font-size:10px;color:var(--text-3);margin-top:.35rem}
+
+/* ── GRIDS ── */
+.g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+
+/* ── TABLES ── */
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--text-3);padding:9px 14px;text-align:left;font-weight:500;border-bottom:1px solid var(--border);background:var(--bg)}
+td{padding:9px 14px;border-bottom:1px solid var(--border);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--bg)}
+tr.total-row td{background:var(--crimson-pale);color:var(--crimson-2);font-weight:600;border-top:1px solid rgba(125,37,53,.15)}
+td.num{text-align:right;font-family:var(--font-mono);font-size:11.5px}
+td.pct{text-align:right;color:var(--text-3);font-size:10.5px}
+.neg{color:var(--red)}.pos{color:var(--green)}
+
+/* ── BADGE ── */
+.badge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:500;letter-spacing:.02em}
+.badge-green{background:var(--green-bg);color:var(--green)}
+.badge-red{background:var(--red-bg);color:var(--red)}
+.badge-amber{background:var(--amber-bg);color:var(--amber)}
+.badge-teal{background:var(--teal-bg);color:var(--teal)}
+.badge-crimson{background:var(--crimson-tint);color:var(--crimson)}
+
+/* ── PROGRESS ── */
+.progress-track{height:5px;background:var(--bg-2);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;border-radius:3px;transition:width .6s ease}
+
+/* ── SEM PROGRESS ── */
+.sem-progress{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.25rem 1.5rem;margin-bottom:1.5rem}
+.sem-prog-label{display:flex;justify-content:space-between;font-size:11px;color:var(--text-3);margin-bottom:.6rem}
+.sem-prog-label span:first-child{font-weight:500;color:var(--text-2)}
+.sem-months{display:flex;justify-content:space-between;margin-top:.75rem}
+.sem-month-pip{text-align:center;flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.sem-month-pip-dot{width:6px;height:6px;border-radius:50%;background:var(--bg-2)}
+.sem-month-pip-dot.past{background:var(--gold-2)}
+.sem-month-pip-dot.current{background:var(--crimson);box-shadow:0 0 0 3px rgba(125,37,53,.15)}
+.sem-month-pip-label{font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-3)}
+.sem-month-pip-label.past{color:var(--gold-2)}.sem-month-pip-label.current{color:var(--crimson);font-weight:600}
+
+/* ── MONTH TABS ── */
+.month-tabs{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:1.25rem}
+.month-tab{font-family:var(--font-body);font-size:11px;padding:5px 14px;border-radius:20px;border:1px solid var(--border-strong);background:var(--surface);color:var(--text-3);cursor:pointer;transition:all .15s;font-weight:400;position:relative}
+.month-tab:hover{border-color:var(--gold);color:var(--text-2)}
+.month-tab.active{background:var(--crimson);color:#fff;border-color:var(--crimson);font-weight:500}
+.month-tab.current-month:not(.active)::after{content:'';position:absolute;bottom:2px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--crimson)}
+.month-tab.future{opacity:.55}
+.month-tab.warn{border-color:var(--amber);color:var(--amber)}
+.month-tab.warn.active{background:var(--amber);color:#fff;border-color:var(--amber)}
+.month-tab.danger{border-color:var(--red);color:var(--red)}
+.month-tab.danger.active{background:var(--red);color:#fff;border-color:var(--red)}
+
+/* ── VIEW TOGGLE ── */
+.view-toggle{display:flex;gap:2px;background:var(--bg-2);border-radius:var(--r-md);padding:3px}
+.view-tab{font-family:var(--font-body);font-size:11px;padding:5px 12px;border-radius:var(--r-sm);border:none;background:none;color:var(--text-3);cursor:pointer;font-weight:400;transition:all .15s}
+.view-tab.active{background:var(--surface);color:var(--crimson);font-weight:500;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+
+/* ── FORM INPUTS ── */
+input.ed{font-family:var(--font-mono);font-size:11.5px;padding:4px 8px;border:1px solid var(--border-strong);border-radius:var(--r-sm);background:var(--bg);color:var(--text);text-align:right;width:96px;transition:all .15s}
+input.ed:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 2px rgba(23,107,94,.1);background:var(--teal-bg)}
+input.ed:disabled{opacity:.45;cursor:not-allowed}
+input.ed-wide{width:60px}
+input.ed-name{font-family:var(--font-body);font-size:12px;padding:4px 8px;border:1px solid var(--border-strong);border-radius:var(--r-sm);background:var(--bg);color:var(--text);width:160px;transition:all .15s}
+input.ed-name:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 2px rgba(23,107,94,.1)}
+input.ed-name:disabled{opacity:.45;cursor:not-allowed}
+
+/* ── DRAG / DEL ── */
+.del-btn{background:none;border:none;cursor:pointer;color:var(--border-strong);font-size:12px;padding:0 4px;border-radius:3px;transition:color .15s}
+.del-btn:hover{color:var(--red)}
+.drag-btn{background:none;border:none;cursor:grab;color:var(--border-strong);font-size:14px;padding:0 3px;user-select:none;transition:color .15s}
+.drag-btn:hover{color:var(--text-3)}.drag-btn:active{cursor:grabbing}
+tr.dragging{opacity:.3}
+tr.drag-over td{border-top:2px solid var(--teal)}
+
+/* ── ADD ROW ── */
+.add-row{display:flex;gap:8px;align-items:center;padding:10px 14px;background:var(--teal-bg);border-top:1px solid rgba(23,107,94,.15)}
+.add-row input{font-size:12px;padding:5px 8px;border:1px solid rgba(23,107,94,.3);background:var(--surface);color:var(--text);font-family:var(--font-body);border-radius:var(--r-sm)}
+.add-row input[type=text]{width:160px}
+.add-row input[type=number]{width:90px;text-align:right;font-family:var(--font-mono)}
+.add-row label{font-size:11px;color:var(--teal);font-weight:500}
+
+/* ── POSITION PANEL ── */
+.position-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:1rem}
+.position-cell{background:var(--bg);border-radius:var(--r-md);padding:1rem 1.25rem;border:1px solid var(--border)}
+
+/* ── SNAP ROWS ── */
+.snap-row{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-bottom:1px solid var(--border)}
+.snap-row:last-child{border-bottom:none}
+.snap-row:hover{background:var(--bg)}
+.snap-name-text{font-weight:500;color:var(--crimson-2);font-size:13px}
+.snap-date{font-size:10px;color:var(--text-3);margin-top:2px}
+.empty-state{padding:2.5rem;text-align:center;color:var(--text-3);font-family:var(--font-display);font-style:italic;font-size:15px}
+
+/* ── BAR ROW ── */
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.bar-label{width:130px;font-size:11px;color:var(--text-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex-shrink:0}
+.bar-track{flex:1;height:4px;background:var(--bg-2);border-radius:2px;overflow:hidden}
+.bar-fill{height:100%;border-radius:2px;transition:width .5s ease}
+.bar-amt{width:70px;text-align:right;font-family:var(--font-mono);font-size:11px;font-weight:500}
+.bar-pct{width:30px;text-align:right;font-size:10px;color:var(--text-3)}
+
+/* ── PRESIDENT ── */
+.pres-wrap{max-width:560px;margin:0 auto}
+.pres-status{border-radius:var(--r-xl);padding:2rem 1.75rem;text-align:center;border:1px solid;margin-bottom:1.25rem}
+.pres-status.good{background:var(--green-bg);border-color:rgba(30,107,69,.2)}
+.pres-status.caution{background:var(--amber-bg);border-color:rgba(122,80,16,.2)}
+.pres-status.bad{background:var(--red-bg);border-color:rgba(139,32,32,.2)}
+.pres-icon{font-size:36px;line-height:1;margin-bottom:.6rem}
+.pres-word{font-family:var(--font-display);font-size:30px;font-weight:600;margin-bottom:.4rem}
+.pres-status.good .pres-word{color:var(--green)}
+.pres-status.caution .pres-word{color:var(--amber)}
+.pres-status.bad .pres-word{color:var(--red)}
+.pres-line{font-size:13px;color:#444;line-height:1.65;max-width:400px;margin:0 auto}
+.pres-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.1rem 1.25rem}
+.pres-card-label{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--text-3);margin-bottom:.35rem}
+.pres-card-val{font-family:var(--font-display);font-size:24px;font-weight:600;line-height:1}
+.pres-card-sub{font-size:10px;color:var(--text-3);margin-top:.3rem}
+.pres-event-row{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--border);font-size:12px}
+.pres-event-row:last-child{border-bottom:none}
+.pres-event-row:hover{background:var(--bg)}
+.pres-event-name{font-weight:500}
+.pres-event-when{font-size:10px;color:var(--text-3);margin-top:2px}
+.pres-event-amt{font-family:var(--font-display);font-size:15px;font-weight:600;color:var(--crimson)}
+.pres-month-row{display:flex;align-items:center;gap:12px;padding:8px 16px;border-bottom:1px solid var(--border);font-size:12px}
+.pres-month-row:last-child{border-bottom:none}
+.pres-bottom{font-size:11px;color:var(--text-3);text-align:center;margin-top:.75rem;font-style:italic;font-family:var(--font-display)}
+
+/* ── CHART ── */
+.chart-wrap{position:relative;height:220px;padding:14px 14px 10px}
+
+/* ── NOTICE ── */
+.notice{font-size:11px;padding:9px 14px;border-radius:var(--r-md);display:flex;align-items:center;justify-content:space-between;border:1px solid;margin-bottom:1.25rem}
+.notice-lock{background:var(--crimson-pale);border-color:rgba(125,37,53,.2);color:var(--crimson-2)}
+.notice-edit{background:var(--teal-bg);border-color:rgba(23,107,94,.25);color:var(--teal)}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--crimson-3);color:rgba(230,215,185,.9);font-size:11px;font-weight:500;padding:10px 18px;border:1px solid rgba(184,154,74,.2);border-radius:var(--r-lg);opacity:0;transition:all .25s;pointer-events:none;z-index:9999;letter-spacing:.02em}
+.toast.show{opacity:1;transform:translateY(-2px)}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .sidebar{display:none}
+  .stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .g3{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .position-grid{grid-template-columns:1fr 1fr}
+  .topbar-center{display:none}
+}
+@media(max-width:520px){
+  .stat-grid,.g2,.g3,.position-grid{grid-template-columns:1fr}
+  .content{padding:1rem}
+  .topbar{padding:0 1rem}
+}
+</style>
+
+<!-- LOCK MODAL -->
+<div class="overlay" id="lock-modal">
+  <div class="modal-box">
+    <div class="modal-monogram">ΚΑ</div>
+    <h2>Treasurer Access</h2>
+    <p>Enter password to unlock editing</p>
+    <input type="password" id="pw-input" placeholder="••••••••" onkeydown="if(event.key==='Enter')tryUnlock()">
+    <div class="modal-err" id="pw-err"></div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="tryUnlock()">Unlock</button>
+      <button class="btn btn-secondary" onclick="dismissModal()">View only</button>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS PANEL -->
+<div class="settings-panel" id="settings-panel" style="display:none">
+  <div class="settings-scrim" onclick="closeSettings()"></div>
+  <div class="settings-drawer">
+    <div class="settings-head">
+      <h2>Settings</h2>
+      <button class="settings-close" onclick="closeSettings()">✕</button>
+    </div>
+    <div class="settings-body">
+      <div class="settings-info">Semester date ranges control which months appear throughout the dashboard. Changes take effect immediately after saving.</div>
+      <div class="settings-section">
+        <div class="settings-section-title">Semester Date Ranges</div>
+        <div class="settings-sem">
+          <div class="settings-sem-label"><span class="sem-dot sem-dot-spring"></span>Spring Semester</div>
+          <div class="settings-row">
+            <div class="settings-field"><label>Start date</label><input type="date" id="s-spring-start"><div class="settings-err" id="err-spring"></div></div>
+            <div class="settings-field"><label>End date</label><input type="date" id="s-spring-end"></div>
+          </div>
+        </div>
+        <div class="settings-sem">
+          <div class="settings-sem-label"><span class="sem-dot sem-dot-summer"></span>Summer Semester</div>
+          <div class="settings-row">
+            <div class="settings-field"><label>Start date</label><input type="date" id="s-summer-start"><div class="settings-err" id="err-summer"></div></div>
+            <div class="settings-field"><label>End date</label><input type="date" id="s-summer-end"></div>
+          </div>
+        </div>
+        <div class="settings-sem">
+          <div class="settings-sem-label"><span class="sem-dot sem-dot-fall"></span>Fall Semester</div>
+          <div class="settings-row">
+            <div class="settings-field"><label>Start date</label><input type="date" id="s-fall-start"><div class="settings-err" id="err-fall"></div></div>
+            <div class="settings-field"><label>End date</label><input type="date" id="s-fall-end"></div>
+          </div>
+        </div>
+      </div>
+      <div class="settings-section">
+        <div class="settings-section-title">Display</div>
+        <div class="settings-sem">
+          <div class="settings-sem-label" style="margin-bottom:.5rem">Chapter</div>
+          <div class="settings-field">
+            <label>Chapter name</label>
+            <input type="text" id="s-chapter" style="width:100%;font-family:var(--font-body);font-size:12px;padding:8px 10px;border:1px solid var(--border-strong);border-radius:var(--r-md);background:var(--surface);color:var(--text)" placeholder="Florida State">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="settings-foot">
+      <button class="btn btn-ghost" onclick="resetSettings()">Reset defaults</button>
+      <button class="btn btn-secondary" onclick="closeSettings()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveSettings()">Save settings</button>
+    </div>
+  </div>
+</div>
+
+<!-- LAYOUT -->
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-monogram">ΚΑ</div>
+      <div class="sidebar-title">Kappa Alpha Order</div>
+      <div class="sidebar-sub" id="sidebar-sub-text">Florida State</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-label">Treasury</div>
+      <button class="nav-item active" onclick="show('overview',this)">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="6" rx="1.5"/><rect x="9" y="1" width="6" height="6" rx="1.5"/><rect x="1" y="9" width="6" height="6" rx="1.5"/><rect x="9" y="9" width="6" height="6" rx="1.5"/></svg>
+        Overview
+      </button>
+      <button class="nav-item" onclick="show('expenses',this)">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12M2 8h8M2 12h5"/></svg>
+        Expenses
+      </button>
+      <button class="nav-item" onclick="show('dues',this)">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v6M6 7h3.5"/></svg>
+        Dues
+      </button>
+      <div class="nav-divider"></div>
+      <div class="nav-label">Views</div>
+      <button class="nav-item" id="snap-nav-btn" onclick="show('snapshots',this)">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 13V5l4-4h6a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/><path d="M6 1v4H2"/></svg>
+        Snapshots
+      </button>
+      <button class="nav-item" onclick="show('president',this)">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.314 2.686-6 6-6s6 2.686 6 6"/></svg>
+        President View
+      </button>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-footer-btn" onclick="toggleLock()" id="lock-btn">
+        <div class="lock-dot" id="lock-dot"></div>
+        <span class="footer-btn-text" id="lock-text">View only</span>
+      </div>
+      <div class="sidebar-footer-btn" onclick="openSettings()">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="rgba(210,195,165,.65)" stroke-width="1.5" style="flex-shrink:0"><circle cx="8" cy="8" r="2.5"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.41 1.41M11.54 11.54l1.41 1.41M12.95 3.05l-1.41 1.41M4.46 11.54l-1.41 1.41"/></svg>
+        <span class="footer-btn-text">Settings</span>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <div class="topbar-title" id="topbar-title">Overview</div>
+        <div id="topbar-sem-badge"></div>
+      </div>
+      <div class="topbar-center">
+        <div class="sem-switcher" id="sem-switcher"></div>
+      </div>
+      <div class="topbar-right">
+        <div id="save-bar" style="display:none;align-items:center;gap:6px">
+          <input class="snap-input" type="text" id="snap-name" placeholder="Snapshot name…" maxlength="40">
+          <button class="btn btn-secondary btn-sm" onclick="saveSnapshot()">Save</button>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="show('snapshots',document.getElementById('snap-nav-btn'))">Snapshots</button>
+      </div>
+    </div>
+
+    <div class="content">
+      <!-- OVERVIEW -->
+      <div id="overview" class="page active">
+        <div id="ov-notice"></div>
+        <div class="stat-grid" id="stat-cards"></div>
+        <div id="current-position-wrap"></div>
+        <div id="sem-progress-wrap"></div>
+        <div class="g2" style="margin-bottom:1.5rem">
+          <div class="card">
+            <div class="card-head">
+              <span class="card-title">Balance Trajectory</span>
+              <span class="card-meta" id="chart-meta"></span>
+            </div>
+            <div class="chart-wrap"><canvas id="balChart" role="img" aria-label="Monthly balance trajectory">Balance chart</canvas></div>
+            <div style="display:flex;gap:16px;padding:0 18px 14px;font-size:10px;color:var(--text-3);text-transform:uppercase;letter-spacing:.07em">
+              <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;background:var(--crimson);border-radius:2px;display:inline-block"></span>Balance</span>
+              <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:2px;background:var(--teal);display:inline-block"></span>Expenses</span>
+              <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:2px;background:var(--gold);display:inline-block"></span>Revenue</span>
+            </div>
+          </div>
+          <div>
+            <div class="card" style="margin-bottom:14px"><div class="card-head"><span class="card-title">Operating</span></div><div style="padding:14px" id="op-bars"></div></div>
+            <div class="card"><div class="card-head"><span class="card-title">Social</span></div><div style="padding:14px" id="soc-bars"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- EXPENSES -->
+      <div id="expenses" class="page">
+        <div id="exp-notice"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:1rem">
+          <div class="month-tabs" id="exp-month-tabs" style="margin-bottom:0"></div>
+          <div class="view-toggle">
+            <button class="view-tab active" id="vt-budget" onclick="setExpView('budget',this)">Budget</button>
+            <button class="view-tab" id="vt-actual" onclick="setExpView('actual',this)">Actual YTD</button>
+            <button class="view-tab" id="vt-bva" onclick="setExpView('bva',this)">Budget vs. Actual</button>
+          </div>
+        </div>
+        <div id="exp-month-stats" style="margin-bottom:1.5rem"></div>
+        <div id="exp-tables"></div>
+      </div>
+
+      <!-- DUES -->
+      <div id="dues" class="page">
+        <div id="dues-notice"></div>
+        <div id="dues-collection-wrap"></div>
+        <div class="card" style="margin-bottom:1.25rem">
+          <div class="card-head">
+            <span class="card-title">Dues by Bracket</span>
+            <span class="card-meta" id="dues-sem-label"></span>
+          </div>
+          <div class="table-wrap">
+            <table><thead><tr><th>Bracket</th><th>Members</th><th>Rate</th><th>Paid in Full</th><th>Payment Plan</th><th>Total Expected</th><th>% Rev</th></tr></thead>
+            <tbody id="spring-dues-body"></tbody>
+            <tfoot id="spring-dues-foot"></tfoot></table>
+          </div>
+        </div>
+        <div class="g2">
+          <div class="card"><div class="card-head"><span class="card-title">Collection Structure</span></div><div style="padding:16px" id="dues-bars"></div></div>
+          <div class="card"><div class="card-head"><span class="card-title">Bracket Breakdown</span></div><div style="padding:14px" id="dues-detail-bars"></div></div>
+        </div>
+      </div>
+
+      <!-- SNAPSHOTS -->
+      <div id="snapshots" class="page">
+        <div class="card"><div class="card-head"><span class="card-title">Saved Snapshots</span></div><div id="snapshots-list"></div></div>
+        <p style="font-size:11px;color:var(--text-3);margin-top:.75rem;font-style:italic;font-family:var(--font-display)">Snapshots save the entire multi-semester state. Load one to restore all figures.</p>
+      </div>
+
+      <!-- PRESIDENT VIEW -->
+      <div id="president" class="page">
+        <div class="pres-wrap">
+          <div id="pres-status-box"></div>
+          <div class="g2" id="pres-grid" style="margin-bottom:1.25rem"></div>
+          <div class="card" style="margin-bottom:1rem"><div class="card-head"><span class="card-title">Largest upcoming expenses</span></div><div id="pres-events"></div></div>
+          <div class="card" style="margin-bottom:1rem"><div class="card-head"><span class="card-title">Month-by-month balance</span></div><div id="pres-months"></div></div>
+          <div class="pres-bottom">Read-only · Questions? Reach out to the Treasurer.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   SECTION 1 — SEMESTER CALENDAR CONFIGURATION
+   Stored in localStorage: 'ka-sem-config'
+   Controls which months appear for each semester.
+═══════════════════════════════════════════════════════════════ */
+const SEM_CONFIG_DEFAULTS = {
+  spring: { start: '2026-01-12', end: '2026-05-02', label: 'Spring' },
+  summer: { start: '2026-05-11', end: '2026-08-07', label: 'Summer' },
+  fall:   { start: '2026-08-24', end: '2026-12-11', label: 'Fall'   },
+  chapter: 'Florida State'
+};
+
+let semConfig = (() => {
+  try { const s = localStorage.getItem('ka-sem-config'); if (s) return JSON.parse(s); } catch(e) {}
+  return JSON.parse(JSON.stringify(SEM_CONFIG_DEFAULTS));
+})();
+
+function persistSemConfig() {
+  try { localStorage.setItem('ka-sem-config', JSON.stringify(semConfig)); } catch(e) {}
+}
+
+// Returns array of {year, month} objects covered by a semester
+function getSemesterMonths(key) {
+  const cfg = semConfig[key];
+  const start = new Date(cfg.start + 'T00:00:00');
+  const end   = new Date(cfg.end   + 'T00:00:00');
+  const out = [];
+  let cur = new Date(start.getFullYear(), start.getMonth(), 1);
+  while (cur <= end) { out.push({ year: cur.getFullYear(), month: cur.getMonth() }); cur.setMonth(cur.getMonth() + 1); }
+  return out;
+}
+
+// Auto-detects which semester today falls in (or nearest upcoming)
+function detectCurrentSemester() {
+  const today = new Date();
+  for (const key of ['spring','summer','fall']) {
+    const s = new Date(semConfig[key].start + 'T00:00:00');
+    const e = new Date(semConfig[key].end   + 'T00:00:00');
+    if (today >= s && today <= e) return key;
+  }
+  let nearest = 'spring', nearestDiff = Infinity;
+  for (const key of ['spring','summer','fall']) {
+    const diff = Math.abs(new Date(semConfig[key].start + 'T00:00:00') - today);
+    if (diff < nearestDiff) { nearestDiff = diff; nearest = key; }
+  }
+  return nearest;
+}
+
+function getSemesterProgress(key) {
+  const s = new Date(semConfig[key].start + 'T00:00:00');
+  const e = new Date(semConfig[key].end   + 'T00:00:00');
+  const today = new Date();
+  if (today < s) return 0; if (today > e) return 100;
+  return Math.round((today - s) / (e - s) * 100);
+}
+
+const monthName  = ym => new Date(ym.year, ym.month, 1).toLocaleString('default', { month: 'long' });
+const monthShort = ym => new Date(ym.year, ym.month, 1).toLocaleString('default', { month: 'short' });
+const isMonthPast    = ym => { const t = new Date(); return ym.year < t.getFullYear() || (ym.year === t.getFullYear() && ym.month < t.getMonth()); };
+const isMonthCurrent = ym => { const t = new Date(); return ym.year === t.getFullYear() && ym.month === t.getMonth(); };
+const isMonthFuture  = ym => !isMonthPast(ym) && !isMonthCurrent(ym);
+
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTION 2 — PER-SEMESTER DATA STORE
+   ─────────────────────────────────────────────────────────────
+   Each semester is a fully independent object:
+     { opData, socData, revData, dues, duesCollected, realChecking, realSavings, actualOpData, actualSocData, actualThru }
+
+   'semStore' is the single source of truth — no shared arrays.
+   Reading: semStore[activeSem].opData  (always scoped)
+   Writing: semStore[activeSem].opData  (never bleeds across)
+
+   Defaults are defined per-semester below.
+   Persistence: localStorage 'ka-sem-store' (full object serialized).
+   On load: localStorage → fallback to defaults (never mixed).
+═══════════════════════════════════════════════════════════════ */
+
+// ─── DEFAULT FACTORIES ─────────────────────────────────────
+// Each returns a fresh deep copy. Called only if no saved data exists.
+
+function defaultSpring() {
+  return {
+    opData: [
+      {name:'Rent',               vals:[10200,10200,10200,10200,0,0]},
+      {name:'Internet',           vals:[231,231,231,231,231,231]},
+      {name:'Utilities',          vals:[3277,2022,1879,0,2000,2000]},
+      {name:'Nations/Omegafi',    vals:[0,0,0,3414,0,0]},
+      {name:'Initiation fee',     vals:[859,0,0,0,0,0]},
+      {name:'FSL dues',           vals:[0,1422,0,0,0,0]},
+      {name:'Composite',          vals:[4500,0,0,4000,0,0]},
+      {name:'House improvement',  vals:[2560,752,543,1822,0,0]},
+      {name:'Marpan',             vals:[243,0,0,0,0,0]},
+      {name:'Savings input',      vals:[5000,7160,10000,1141,0,0]},
+      {name:'Brotherhood incentives',vals:[0,508,508,0,0,0]},
+    ],
+    socData: [
+      {name:'Formal',             vals:[0,117053,0,0,0,0]},
+      {name:'Convivium',          vals:[0,10401,208,6,0,0]},
+      {name:'KA Watch',           vals:[0,0,21600,33429,0,0]},
+      {name:'Rush events',        vals:[21909,0,0,0,5000,5000]},
+      {name:'Tables/bar tab',     vals:[2656,413,1761,2889,2000,2000]},
+      {name:'Bonfire/house call', vals:[812,0,389,925,2000,2000]},
+      {name:'Date functions',     vals:[6682,715,215,0,0,0]},
+      {name:'Brotherhood events', vals:[1514,500,405,3400,0,0]},
+      {name:'Exec',               vals:[393,200,15193,193,0,0]},
+      {name:'Mom/Dads weekend',   vals:[0,0,7418,0,0,0]},
+      {name:'Watch week',         vals:[0,0,0,668,0,0]},
+      {name:'Senior gift',        vals:[0,0,0,0,0,0]},
+      {name:'Educational prog.',  vals:[0,0,0,0,0,0]},
+      {name:'Meals',              vals:[1245,949,1337,1001,0,0]},
+      {name:'Raffles',            vals:[368,0,750,0,0,0]},
+    ],
+    revData: [129384,147279,32580,24439,16100,16100],
+    // Actual confirmed bank data (Jan–Apr 2026)
+    actualOpData: [
+      {name:'Rent',               vals:[0,0,0,0,0,0]},
+      {name:'Internet',           vals:[231,231,231,231,0,0]},
+      {name:'Utilities',          vals:[3277,2022,1879,0,0,0]},
+      {name:'Nations/Omegafi',    vals:[909,0,0,3414,0,0]},
+      {name:'Initiation fee',     vals:[0,0,0,0,0,0]},
+      {name:'FSL dues',           vals:[0,1422,0,0,0,0]},
+      {name:'Composite',          vals:[430,989,215,0,0,0]},
+      {name:'House improvement',  vals:[4243,1083,442,2058,0,0]},
+      {name:'Marpan',             vals:[243,0,0,0,0,0]},
+      {name:'Savings input',      vals:[5000,7160,10000,1141,0,0]},
+      {name:'Brotherhood incentives',vals:[1229,1008,508,13,0,0]},
+    ],
+    actualSocData: [
+      {name:'Formal',             vals:[6250,123004,0,0,0,0]},
+      {name:'Convivium',          vals:[10000,1068,0,0,0,0]},
+      {name:'KA Watch',           vals:[0,0,34500,25074,0,0]},
+      {name:'Rush events',        vals:[2000,0,0,994,0,0]},
+      {name:'Tables/bar tab',     vals:[3332,1349,2579,2096,0,0]},
+      {name:'Bonfire/house call', vals:[0,0,2468,0,0,0]},
+      {name:'Date functions',     vals:[0,22,1300,0,0,0]},
+      {name:'Brotherhood events', vals:[0,249,134,157,0,0]},
+      {name:'Exec',               vals:[3072,11256,8129,13615,0,0]},
+      {name:'Mom/Dads weekend',   vals:[0,0,0,0,0,0]},
+      {name:'Watch week',         vals:[0,0,375,0,0,0]},
+      {name:'Senior gift',        vals:[0,0,0,0,0,0]},
+      {name:'Educational prog.',  vals:[0,0,0,0,0,0]},
+      {name:'Meals',              vals:[732,391,164,173,0,0]},
+      {name:'Raffles',            vals:[0,0,0,0,0,0]},
+    ],
+    actualThru: 3, // index within semester months that have confirmed bank data (Apr = 3)
+    dues: [
+      {bracket:'Shinee 1st Sem',    n:29, rate:2000, pif:30000,  pmt:20000},
+      {bracket:'Shinee 2nd Sem',    n:46, rate:1800, pif:49680,  pmt:33120},
+      {bracket:'Sophomore Spring',   n:44, rate:1500, pif:41400,  pmt:27600},
+      {bracket:'Junior Spring',      n:44, rate:1300, pif:31980,  pmt:21320},
+      {bracket:'Senior Spring',      n:58, rate:900,  pif:31320,  pmt:20880},
+    ],
+    duesCollected: [38915, 79900, 62984.25, 49801.25, 46336.20],
+    realChecking: 23955,
+    realSavings:  23000,
+  };
+}
+
+function defaultSummer() {
+  // Summer: smaller chapter, rush-heavy, no formal events
+  return {
+    opData: [
+      {name:'Rent',               vals:[0,0,0,0]},
+      {name:'Internet',           vals:[231,231,231,231]},
+      {name:'Utilities',          vals:[1500,1500,1200,1200]},
+      {name:'House improvement',  vals:[500,500,0,0]},
+      {name:'Savings input',      vals:[2000,2000,2000,2000]},
+    ],
+    socData: [
+      {name:'Rush events',        vals:[8000,0,0,5000]},
+      {name:'Tables/bar tab',     vals:[1200,1200,1200,1200]},
+      {name:'Brotherhood events', vals:[500,500,500,500]},
+      {name:'Meals',              vals:[400,400,400,400]},
+    ],
+    revData: [45000,38000,20000,22000],
+    actualOpData: [
+      {name:'Rent',               vals:[0,0,0,0]},
+      {name:'Internet',           vals:[0,0,0,0]},
+      {name:'Utilities',          vals:[0,0,0,0]},
+      {name:'House improvement',  vals:[0,0,0,0]},
+      {name:'Savings input',      vals:[0,0,0,0]},
+    ],
+    actualSocData: [
+      {name:'Rush events',        vals:[0,0,0,0]},
+      {name:'Tables/bar tab',     vals:[0,0,0,0]},
+      {name:'Brotherhood events', vals:[0,0,0,0]},
+      {name:'Meals',              vals:[0,0,0,0]},
+    ],
+    actualThru: -1, // no confirmed actuals yet for summer
+    dues: [
+      {bracket:'Summer Members', n:30, rate:800, pif:16800, pmt:7200},
+    ],
+    duesCollected: [0],
+    realChecking: 0,
+    realSavings:  0,
+  };
+}
+
+function defaultFall() {
+  // Fall: minimal — only fixed ongoing expenses, zero social budget, zero dues assumptions
+  return {
+    opData: [
+      {name:'Rent',               vals:[10200,10200,10200,10200,0]},
+      {name:'Internet',           vals:[231,231,231,231,231]},
+      {name:'Utilities',          vals:[2000,2000,2000,2000,2000]},
+      {name:'Nations/Omegafi',    vals:[0,0,0,0,0]},
+      {name:'FSL dues',           vals:[0,1422,0,0,0]},
+      {name:'House improvement',  vals:[0,0,0,0,0]},
+      {name:'Savings input',      vals:[0,0,0,0,0]},
+    ],
+    socData: [
+      {name:'Rush events',        vals:[0,0,0,0,0]},
+      {name:'Tables/bar tab',     vals:[0,0,0,0,0]},
+      {name:'Brotherhood events', vals:[0,0,0,0,0]},
+      {name:'Meals',              vals:[0,0,0,0,0]},
+    ],
+    revData: [0,0,0,0,0],
+    actualOpData: [
+      {name:'Rent',               vals:[0,0,0,0,0]},
+      {name:'Internet',           vals:[0,0,0,0,0]},
+      {name:'Utilities',          vals:[0,0,0,0,0]},
+      {name:'Nations/Omegafi',    vals:[0,0,0,0,0]},
+      {name:'FSL dues',           vals:[0,0,0,0,0]},
+      {name:'House improvement',  vals:[0,0,0,0,0]},
+      {name:'Savings input',      vals:[0,0,0,0,0]},
+    ],
+    actualSocData: [
+      {name:'Rush events',        vals:[0,0,0,0,0]},
+      {name:'Tables/bar tab',     vals:[0,0,0,0,0]},
+      {name:'Brotherhood events', vals:[0,0,0,0,0]},
+      {name:'Meals',              vals:[0,0,0,0,0]},
+    ],
+    actualThru: -1,
+    dues: [], // Fall dues are entered manually when amounts are known
+    duesCollected: [],
+    realChecking: 0,
+    realSavings:  0,
+  };
+}
+
+// ─── STORE INITIALIZATION ──────────────────────────────────
+// Load from localStorage or build from defaults.
+// Structure: { spring: {...}, summer: {...}, fall: {...} }
+function loadSemStore() {
+  try {
+    const saved = localStorage.getItem('ka-sem-store');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      // Merge: use saved data for each key, fall back to default if key missing
+      return {
+        spring: parsed.spring || defaultSpring(),
+        summer: parsed.summer || defaultSummer(),
+        fall:   parsed.fall   || defaultFall(),
+      };
+    }
+  } catch(e) {}
+  return { spring: defaultSpring(), summer: defaultSummer(), fall: defaultFall() };
+}
+
+let semStore = loadSemStore();
+
+// Persist the entire store to localStorage
+function persistSemStore() {
+  try { localStorage.setItem('ka-sem-store', JSON.stringify(semStore)); } catch(e) {}
+}
+
+// Convenience: get active semester's data object (read/write)
+function S() { return semStore[activeSem]; }
+
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTION 3 — APP STATE (not semester-specific)
+═══════════════════════════════════════════════════════════════ */
+const PASS = 'Traveller1';
+const fmt  = n => '$' + Math.round(n).toLocaleString();
+const dc   = o => JSON.parse(JSON.stringify(o));
+const rowTotal = v => v.reduce((a,x) => a + (x||0), 0);
+const colSum   = (d,c) => d.reduce((a,r) => a + (r.vals[c]||0), 0);
+
+let unlocked  = false;
+let activeSem = detectCurrentSemester();
+let expMonth  = 0;   // index within active semester months
+let expView   = 'budget';
+let dragSrcKey = null, dragSrcIdx = null;
+
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTION 4 — AUTH
+═══════════════════════════════════════════════════════════════ */
+function tryUnlock() {
+  if (document.getElementById('pw-input').value === PASS) {
+    unlocked = true;
+    document.getElementById('lock-modal').style.display = 'none';
+    document.getElementById('lock-dot').classList.add('unlocked');
+    document.getElementById('lock-text').textContent = 'Editing enabled';
+    document.getElementById('save-bar').style.display = 'flex';
+    refreshAll(); showToast('Editing unlocked');
+  } else {
+    document.getElementById('pw-err').textContent = 'Incorrect password.';
+    document.getElementById('pw-input').value = '';
+  }
+}
+function dismissModal() { document.getElementById('lock-modal').style.display = 'none'; refreshAll(); }
+function toggleLock() {
+  if (unlocked) {
+    unlocked = false;
+    document.getElementById('lock-dot').classList.remove('unlocked');
+    document.getElementById('lock-text').textContent = 'View only';
+    document.getElementById('save-bar').style.display = 'none';
+    refreshAll(); showToast('Editing locked');
+  } else {
+    document.getElementById('pw-input').value = '';
+    document.getElementById('pw-err').textContent = '';
+    document.getElementById('lock-modal').style.display = 'flex';
+  }
+}
+function noticeHtml(msg) {
+  return unlocked
+    ? `<div class="notice notice-edit">✏️ ${msg}</div>`
+    : `<div class="notice notice-lock"><span>🔒 View-only — unlock to edit</span><button class="btn btn-primary btn-sm" onclick="toggleLock()">Unlock</button></div>`;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTION 5 — SETTINGS PANEL
+═══════════════════════════════════════════════════════════════ */
+function openSettings() {
+  document.getElementById('s-spring-start').value = semConfig.spring.start;
+  document.getElementById('s-spring-end').value   = semConfig.spring.end;
+  document.getElementById('s-summer-start').value = semConfig.summer.start;
+  document.getElementById('s-summer-end').value   = semConfig.summer.end;
+  document.getElementById('s-fall-start').value   = semConfig.fall.start;
+  document.getElementById('s-fall-end').value     = semConfig.fall.end;
+  document.getElementById('s-chapter').value      = semConfig.chapter || 'Florida State';
+  ['spring','summer','fall'].forEach(k => { document.getElementById('err-'+k).style.display='none'; });
+  document.getElementById('settings-panel').style.display = 'flex';
+}
+function closeSettings() { document.getElementById('settings-panel').style.display = 'none'; }
+function resetSettings() {
+  semConfig = JSON.parse(JSON.stringify(SEM_CONFIG_DEFAULTS));
+  persistSemConfig(); openSettings(); applySettings(); showToast('Settings reset to defaults');
+}
+function saveSettings() {
+  const v = {
+    spring: { start: document.getElementById('s-spring-start').value, end: document.getElementById('s-spring-end').value },
+    summer: { start: document.getElementById('s-summer-start').value, end: document.getElementById('s-summer-end').value },
+    fall:   { start: document.getElementById('s-fall-start').value,   end: document.getElementById('s-fall-end').value   },
+  };
+  let valid = true;
+  for (const key of ['spring','summer','fall']) {
+    const e = document.getElementById('err-'+key);
+    if (!v[key].start || !v[key].end || v[key].start >= v[key].end) {
+      e.textContent = 'Start must be before end date.'; e.style.display = 'block'; valid = false;
+    } else { e.style.display = 'none'; }
+  }
+  // Overlap check
+  const ranges = ['spring','summer','fall'].map(k => ({ key:k, s:new Date(v[k].start), e:new Date(v[k].end) }));
+  for (let i = 0; i < ranges.length; i++) {
+    for (let j = i+1; j < ranges.length; j++) {
+      if (ranges[i].s <= ranges[j].e && ranges[j].s <= ranges[i].e) {
+        const errEl = document.getElementById('err-'+ranges[j].key);
+        errEl.textContent = `Overlaps with ${semConfig[ranges[i].key].label} semester.`;
+        errEl.style.display = 'block'; valid = false;
+      }
+    }
+  }
+  if (!valid) return;
+  semConfig.spring = { ...v.spring, label: 'Spring' };
+  semConfig.summer = { ...v.summer, label: 'Summer' };
+  semConfig.fall   = { ...v.fall,   label: 'Fall'   };
+  semConfig.chapter = document.getElementById('s-chapter').value.trim() || 'Florida State';
+  persistSemConfig(); closeSettings(); applySettings(); showToast('Settings saved');
+}
+function applySettings() {
+  activeSem = detectCurrentSemester();
+  const ch = semConfig.chapter || 'Florida State';
+  document.getElementById('sidebar-sub-text').textContent = ch;
+  document.title = 'KA Treasury · ' + ch;
+  renderSemSwitcher(); refreshAll();
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTION 6 — SEMESTER SWITCHER
+═══════════════════════════════════════════════════════════════ */
+function renderSemSwitcher() {
+  const nowSem = detectCurrentSemester();
+  document.getElementById('sem-switcher').innerHTML = ['spring','summer','fall'].map(key => {
+    const isNow = nowSem === key;
+    return `<button class="sem-tab ${activeSem===key?'active':''} ${isNow?'is-now':''}"
+      onclick="switchSem('${key}',this)">${semConfig[key].label}</button>`;
+  }).join('');
+  // Update topbar badge
+  const badgeMap = { spring:'sem-badge-spring', summer:'sem-badge-summer', fall:'sem-badge-fall' };
+  document.getElementById('topbar-sem-badge').innerHTML =
+    `<span class="sem-badge ${badgeMap[activeSem]}">${semConfig[activeSem].label} 2026</span>`;
+}
+
+function switchSem(key, btn) {
+  activeSem = key;
+  // Save any pending changes to the outgoing semester before switching
+  persistSemStore();
+  // Reset expense tab to first month of new semester
+  expMonth = 0;
+  // Re-render switcher (updates active tab + badge)
+  renderSemSwitcher();
+  refreshAll();
+  showToast(`Switched to ${semConfig[key].label}`);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTION 7 — BALANCE CALCULATIONS
+   All functions read exclusively from S() (active semester data).
+
+   Balance model:
+   - Months with confirmed bank data (index <= actualThru): use actual spend
+   - Future months: use budget projections
+   - getExpForMonthIdx() is the single gating function — everything else calls it
+═══════════════════════════════════════════════════════════════ */
+
+// Returns total spend for semester month index i.
+// For confirmed months uses bank actuals; for future months uses budget.
+function getExpForMonthIdx(i) {
+  if (S().actualThru >= 0 && i <= S().actualThru) {
+    return colSum(S().actualOpData, i) + colSum(S().actualSocData, i);
+  }
+  return colSum(S().opData, i) + colSum(S().socData, i);
+}
+
+// Returns cumulative running balance at end of each semester month.
+// Balance[i] = Balance[i-1] + Revenue[i] - Expenses[i]
+// starting from 0 at the beginning of the semester (not from realChecking —
+// realChecking is a spot-check against the model, not the starting balance).
+function getBalances() {
+  const months = getSemesterMonths(activeSem);
+  let running = 0;
+  return months.map((_, i) => {
+    running = running + (S().revData[i] || 0) - getExpForMonthIdx(i);
+    return running;
+  });
+}
+
+// Returns what the model expects the running balance to be as of the END
+// of the month prior to today (i.e. the last fully-closed month).
+// Returns null if today is not within this semester, so callers can
+// suppress the variance widget rather than show a misleading $0.
+function getProjectedNow() {
+  const months = getSemesterMonths(activeSem);
+  const curIdx = months.findIndex(ym => isMonthCurrent(ym));
+  // -1 means today is not in this semester at all
+  if (curIdx === -1) return null;
+  // 0 means we're in the first month — no prior closed month to compare against
+  if (curIdx === 0) return null;
+  return getBalances()[curIdx - 1];
+}
+
+const balColor      = b => b < 2000 ? 'var(--red)' : b < 5000 ? 'var(--amber)' : 'var(--green)';
+const balChartColor = b => b < 2000 ? '#8B2020' : b < 5000 ? '#7A5010' : '#7D2535';
+
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTION 8 — OVERVIEW RENDERING
+═══════════════════════════════════════════════════════════════ */
+function renderStats() {
+  const months   = getSemesterMonths(activeSem);
+  const bals     = getBalances();
+  const totalRev = S().revData.slice(0, months.length).reduce((a,v) => a+v, 0);
+  const totalOp  = S().opData.reduce((a,r) => a + rowTotal(r.vals.slice(0, months.length)), 0);
+  const totalSoc = S().socData.reduce((a,r) => a + rowTotal(r.vals.slice(0, months.length)), 0);
+  const end      = bals[bals.length - 1] || 0;
+  const endColor = balColor(end);
+  document.getElementById('ov-notice').innerHTML = noticeHtml('All changes are isolated to this semester. Switch semesters without losing any data.');
+  document.getElementById('stat-cards').innerHTML = `
+    <div class="stat-card" style="border-top:3px solid var(--crimson)">
+      <div class="stat-label">Projected Revenue</div>
+      <div class="stat-value" style="color:var(--crimson)">${fmt(totalRev)}</div>
+      <div class="stat-sub">${semConfig[activeSem].label} · All sources</div>
+    </div>
+    <div class="stat-card" style="border-top:3px solid var(--gold)">
+      <div class="stat-label">Total Expenses</div>
+      <div class="stat-value" style="color:var(--gold-2)">${fmt(totalOp+totalSoc)}</div>
+      <div class="stat-sub">Op ${fmt(totalOp)} · Social ${fmt(totalSoc)}</div>
+    </div>
+    <div class="stat-card" style="border-top:3px solid ${endColor}">
+      <div class="stat-label">Projected End Balance</div>
+      <div class="stat-value" style="color:${endColor}">${fmt(end)}</div>
+      <div class="stat-sub">After all expenditures</div>
+    </div>
+    <div class="stat-card" style="border-top:3px solid var(--teal)">
+      <div class="stat-label">Savings Reserve</div>
+      <div class="stat-value" style="color:var(--teal)">${fmt(S().realSavings)}</div>
+      <div class="stat-sub">Separate account</div>
+    </div>`;
+  renderCurrentPosition();
+}
+
+function renderCurrentPosition() {
+  const projected = getProjectedNow(); // null when not in this semester or in first month
+  const total     = S().realChecking + S().realSavings;
+
+  // Only show the variance comparison when we have a meaningful projected value
+  // (today is within this semester and at least one full month has closed).
+  let varianceHtml = '';
+  if (projected !== null) {
+    const variance = S().realChecking - projected;
+    const vPos     = variance >= 0;
+    const vColor   = vPos ? 'var(--green)' : 'var(--red)';
+    const vBg      = vPos ? 'var(--green-bg)' : 'var(--red-bg)';
+    varianceHtml = `
+      <div style="border-top:1px solid var(--border);padding-top:1rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+        <div style="font-size:12px;color:var(--text-2)">Budget model expects checking ≈ <strong style="color:var(--text)">${fmt(projected)}</strong> at this point.</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-3)">Variance</span>
+          <span style="font-family:var(--font-display);font-size:20px;font-weight:600;color:${vColor}">${vPos?'+':''}${fmt(variance)}</span>
+          <span class="badge" style="background:${vBg};color:${vColor}">${vPos?'Ahead':'Behind'}</span>
+        </div>
+      </div>`;
+  }
+
+  document.getElementById('current-position-wrap').innerHTML = `
+    <div class="card" style="margin-bottom:1.5rem">
+      <div class="card-head">
+        <span class="card-title">Current Position</span>
+        <span class="card-meta">Bank-verified · as of today</span>
+      </div>
+      <div class="card-body">
+        <div class="position-grid">
+          <div class="position-cell">
+            <div class="stat-label">Checking Account</div>
+            <div style="font-family:var(--font-display);font-size:24px;font-weight:600;color:var(--text);line-height:1;margin:.35rem 0">${fmt(S().realChecking)}</div>
+            ${unlocked
+              ? `<input class="ed" type="number" value="${S().realChecking}" style="width:120px;margin-top:6px"
+                  onchange="S().realChecking=+this.value;persistSemStore();renderStats()">`
+              : `<div class="stat-sub">Operational account</div>`}
+          </div>
+          <div class="position-cell">
+            <div class="stat-label">Savings Reserve</div>
+            <div style="font-family:var(--font-display);font-size:24px;font-weight:600;color:var(--teal);line-height:1;margin:.35rem 0">${fmt(S().realSavings)}</div>
+            ${unlocked
+              ? `<input class="ed" type="number" value="${S().realSavings}" style="width:120px;margin-top:6px"
+                  onchange="S().realSavings=+this.value;persistSemStore();renderStats()">`
+              : `<div class="stat-sub">Not in projections</div>`}
+          </div>
+          <div class="position-cell">
+            <div class="stat-label">Total Reserves</div>
+            <div style="font-family:var(--font-display);font-size:24px;font-weight:600;color:var(--crimson-2);line-height:1;margin:.35rem 0">${fmt(total)}</div>
+            <div class="stat-sub">Checking + savings</div>
+          </div>
+        </div>
+        ${varianceHtml}
+      </div>
+    </div>`;
+}
+
+function renderSemProgress() {
+  const pct    = getSemesterProgress(activeSem);
+  const months = getSemesterMonths(activeSem);
+  const cfg    = semConfig[activeSem];
+  const fmtD   = s => new Date(s+'T00:00:00').toLocaleDateString('default',{month:'short',day:'numeric',year:'numeric'});
+  document.getElementById('sem-progress-wrap').innerHTML = `
+    <div class="sem-progress">
+      <div class="sem-prog-label">
+        <span>${cfg.label} Semester · ${fmtD(cfg.start)} – ${fmtD(cfg.end)}</span>
+        <span style="font-family:var(--font-display);font-style:italic">${pct}% complete</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" style="width:${pct}%;background:var(--crimson)"></div></div>
+      <div class="sem-months">
+        ${months.map(ym => {
+          const p=isMonthPast(ym), c=isMonthCurrent(ym);
+          return `<div class="sem-month-pip">
+            <div class="sem-month-pip-dot ${p?'past':c?'current':''}"></div>
+            <div class="sem-month-pip-label ${p?'past':c?'current':''}">${monthShort(ym)}</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  const el = document.getElementById('chart-meta');
+  if (el) el.textContent = `${cfg.label} ${new Date(cfg.start+'T00:00:00').getFullYear()}`;
+}
+
+let balChart = null;
+function renderChart() {
+  const months   = getSemesterMonths(activeSem);
+  const bals     = getBalances();
+  const labels   = months.map(monthShort);
+  // Use the same expense source as getBalances() — actuals for confirmed months, budget otherwise
+  const exp      = months.map((_, i) => getExpForMonthIdx(i));
+  const revSlice = months.map((_, i) => S().revData[i] || 0);
+  if (balChart) balChart.destroy();
+  balChart = new Chart(document.getElementById('balChart'), {
+    data: {
+      labels,
+      datasets: [
+        {type:'bar',  label:'Balance', data:bals,    backgroundColor:bals.map(b=>balChartColor(b)+'CC'),borderColor:bals.map(b=>balChartColor(b)),borderWidth:1,borderRadius:4,borderSkipped:false},
+        {type:'line', label:'Expenses',data:exp,     borderColor:'#176B5E',backgroundColor:'transparent',pointRadius:3,pointBackgroundColor:'#176B5E',borderWidth:1.5,tension:.4,borderDash:[4,3]},
+        {type:'line', label:'Revenue', data:revSlice,borderColor:'#B89A4A',backgroundColor:'transparent',pointRadius:3,pointBackgroundColor:'#B89A4A',borderWidth:1.5,tension:.4,borderDash:[4,3]}
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>fmt(ctx.raw)},backgroundColor:'rgba(26,23,20,.92)',titleColor:'#E8D9B8',bodyColor:'#ccc',borderColor:'rgba(184,154,74,.2)',borderWidth:1,padding:10,cornerRadius:8}},
+      scales:{y:{ticks:{callback:v=>'$'+Math.round(v/1000)+'k',color:'#9A9590',font:{size:10,family:'IBM Plex Mono'}},grid:{color:'rgba(0,0,0,.05)'},border:{display:false}},x:{ticks:{color:'#9A9590',font:{size:10}},grid:{display:false},border:{display:false}}}
+    }
+  });
+}
+
+function renderBars() {
+  const months = getSemesterMonths(activeSem);
+  const total  = S().opData.reduce((a,r) => a+rowTotal(r.vals.slice(0,months.length)), 0)
+               + S().socData.reduce((a,r) => a+rowTotal(r.vals.slice(0,months.length)), 0) || 1;
+  const mk = (data, id, color) => {
+    const sorted = data.map(r => ({ name:r.name, total:rowTotal(r.vals.slice(0,months.length)) }))
+                       .filter(x=>x.total>0).sort((a,b)=>b.total-a.total);
+    if (!sorted.length) { document.getElementById(id).innerHTML='<div style="color:var(--text-3);font-size:11px;font-style:italic">No data yet</div>'; return; }
+    const max = sorted[0].total;
+    document.getElementById(id).innerHTML = sorted.map(d=>`
+      <div class="bar-row">
+        <div class="bar-label">${d.name}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${Math.round(d.total/max*100)}%;background:${color}"></div></div>
+        <div class="bar-amt">${fmt(d.total)}</div>
+        <div class="bar-pct">${Math.round(d.total/total*100)}%</div>
+      </div>`).join('');
+  };
+  mk(S().opData,  'op-bars',  'var(--crimson)');
+  mk(S().socData, 'soc-bars', 'var(--teal)');
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTION 9 — EXPENSES
+═══════════════════════════════════════════════════════════════ */
+function renderExpMonthTabs() {
+  const months = getSemesterMonths(activeSem);
+  const bals   = getBalances();
+  document.getElementById('exp-month-tabs').innerHTML = months.map((ym, i) => {
+    const b   = bals[i];
+    const col = b < 2000 ? 'danger' : b < 5000 ? 'warn' : '';
+    const tim = isMonthCurrent(ym) ? 'current-month' : isMonthFuture(ym) ? 'future' : '';
+    return `<button class="month-tab ${i===expMonth?'active':''} ${col} ${tim}"
+      onclick="setExpMonth(${i},this)">${monthShort(ym)}</button>`;
+  }).join('');
+}
+
+function setExpMonth(i, btn) {
+  expMonth = i;
+  document.querySelectorAll('.month-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderExpMonthStats(); renderExpTables();
+}
+
+function renderExpMonthStats() {
+  const months = getSemesterMonths(activeSem);
+  const bals   = getBalances();
+  const i      = expMonth;
+  const prior  = i === 0 ? 0 : bals[i - 1];
+  const bal    = bals[i];
+  const bc     = balColor(bal);
+  const isAct  = S().actualThru >= 0 && i <= S().actualThru;
+
+  // For confirmed months, show actual spend split; for future months show budget split.
+  // This must match the data source used by getExpForMonthIdx() — otherwise
+  // "Total expenses" and "End of month balance" would be internally inconsistent.
+  const opSrc  = isAct ? S().actualOpData  : S().opData;
+  const socSrc = isAct ? S().actualSocData : S().socData;
+  const opTot  = colSum(opSrc, i);
+  const socTot = colSum(socSrc, i);
+  document.getElementById('exp-month-stats').innerHTML = `
+    <div class="g3">
+      <div class="stat-card" style="border-top:3px solid var(--teal)">
+        <div class="stat-label">Revenue in</div>
+        <div class="stat-value" style="color:var(--teal)">${fmt(S().revData[i]||0)}</div>
+        ${unlocked?`<div style="margin-top:8px"><input class="ed" type="number" value="${S().revData[i]||0}" style="width:120px"
+          onchange="S().revData[${i}]=+this.value;persistSemStore();refreshAll()"></div>`:''}
+      </div>
+      <div class="stat-card" style="border-top:3px solid var(--crimson)">
+        <div class="stat-label">Total expenses</div>
+        <div class="stat-value" style="color:var(--crimson)">${fmt(opTot+socTot)}</div>
+        <div class="stat-sub">Op: ${fmt(opTot)} · Social: ${fmt(socTot)}</div>
+      </div>
+      <div class="stat-card" style="border-top:3px solid ${bc}">
+        <div class="stat-label">End of month balance</div>
+        <div class="stat-value" style="color:${bc}">${fmt(bal)}</div>
+        <div class="stat-sub">Prior: ${fmt(prior)}${isAct?' · Actuals':''}</div>
+      </div>
+    </div>`;
+}
+
+function startDrag(e,key,idx){ dragSrcKey=key; dragSrcIdx=idx; e.currentTarget.closest('tr').classList.add('dragging'); }
+function dragOver(e,key,idx){ e.preventDefault(); document.querySelectorAll('tr.drag-over').forEach(r=>r.classList.remove('drag-over')); if(dragSrcKey===key) e.currentTarget.closest('tr').classList.add('drag-over'); }
+function drop(e,key,idx){
+  e.preventDefault();
+  document.querySelectorAll('tr.drag-over,tr.dragging').forEach(r=>{r.classList.remove('drag-over');r.classList.remove('dragging');});
+  if(dragSrcKey!==key||dragSrcIdx===idx) return;
+  const data = key==='op' ? S().opData : S().socData;
+  const [moved]=data.splice(dragSrcIdx,1); data.splice(idx,0,moved);
+  persistSemStore(); refreshAll();
+}
+function renameItem(key, ri, val) {
+  (key==='op' ? S().opData : S().socData)[ri].name = val;
+  persistSemStore();
+}
+function addExpItem(key) {
+  if (!unlocked) { showToast('Unlock to edit'); return; }
+  const nameEl=document.getElementById(`add-name-${key}`), amtEl=document.getElementById(`add-amt-${key}`);
+  const name=nameEl.value.trim(), amt=parseFloat(amtEl.value)||0;
+  if (!name) { showToast('Enter a name'); return; }
+  const data = key==='op' ? S().opData : S().socData;
+  const ex = data.find(r => r.name.toLowerCase()===name.toLowerCase());
+  if (ex) {
+    // Extend vals array if needed for this semester's month count
+    while (ex.vals.length <= expMonth) ex.vals.push(0);
+    ex.vals[expMonth] = (ex.vals[expMonth]||0) + amt;
+  } else {
+    const months = getSemesterMonths(activeSem);
+    const nr = { name, vals: new Array(months.length).fill(0) };
+    nr.vals[expMonth] = amt;
+    data.push(nr);
+  }
+  nameEl.value=''; amtEl.value='';
+  persistSemStore(); refreshAll(); showToast('Added: '+name);
+}
+function removeExpItem(key, ri) {
+  if (!unlocked) return;
+  const data = key==='op' ? S().opData : S().socData;
+  data[ri].vals[expMonth] = 0;
+  if (data[ri].vals.every(v=>v===0)) data.splice(ri, 1);
+  persistSemStore(); refreshAll();
+}
+
+function makeExpPanel(key, label) {
+  const budgetData = key==='op' ? S().opData : S().socData;
+  const actualData = key==='op' ? S().actualOpData : S().actualSocData;
+  const data     = expView==='actual' ? actualData : budgetData;
+  const i        = expMonth;
+  const total    = colSum(data, i) || 1;
+  const isActual = expView==='actual';
+  const varRef   = key==='op' ? `S().opData` : `S().socData`;
+  const rows = data.map((r,ri) => (r.vals[i]||0) > 0 ? `
+    <tr draggable="${unlocked&&!isActual}" ondragstart="startDrag(event,'${key}',${ri})" ondragover="dragOver(event,'${key}',${ri})" ondrop="drop(event,'${key}',${ri})">
+      <td style="width:20px">${unlocked&&!isActual?`<span class="drag-btn">⠿</span>`:''}</td>
+      <td><input class="ed-name" type="text" value="${r.name}" ${(unlocked&&!isActual)?'':'disabled'}
+        onchange="renameItem('${key}',${ri},this.value)" onblur="refreshAll()"></td>
+      <td class="num"><input class="ed" type="number" value="${r.vals[i]||0}" ${(unlocked&&!isActual)?'':'disabled'}
+        onchange="${varRef}[${ri}].vals[${i}]=+this.value;persistSemStore();refreshAll()"></td>
+      <td class="pct">${Math.round((r.vals[i]||0)/total*100)}%</td>
+      ${(unlocked&&!isActual)?`<td style="width:24px"><button class="del-btn" onclick="removeExpItem('${key}',${ri})">✕</button></td>`:''}
+    </tr>` : ''
+  ).join('');
+  return `
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">${label} — <span style="color:${isActual?'var(--teal)':'var(--crimson)'}">${fmt(colSum(data,i))}</span></span>
+        ${isActual?'<span class="badge badge-teal">Bank statement</span>':''}
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>${(unlocked&&!isActual)?'<th style="width:20px"></th>':''}<th>Item</th><th>${isActual?'Actual':'Budget'}</th><th>%</th>${(unlocked&&!isActual)?'<th style="width:24px"></th>':''}</tr></thead>
+          <tbody>${rows||`<tr><td colspan="4" style="padding:20px;text-align:center;color:var(--text-3);font-style:italic;font-family:var(--font-display)">No ${isActual?'recorded spending':'budgeted expenses'} this month</td></tr>`}</tbody>
+        </table>
+      </div>
+      ${(unlocked&&!isActual)?`<div class="add-row">
+        <label>Add:</label>
+        <input type="text" id="add-name-${key}" placeholder="Item name" onkeydown="if(event.key==='Enter')addExpItem('${key}')">
+        <input type="number" id="add-amt-${key}" placeholder="Amount" min="0" onkeydown="if(event.key==='Enter')addExpItem('${key}')">
+        <button class="btn btn-teal btn-sm" onclick="addExpItem('${key}')">+ Add</button>
+      </div>`:''}
+    </div>`;
+}
+
+function setExpView(v, btn) {
+  expView = v;
+  document.querySelectorAll('.view-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderExpTables();
+}
+
+function renderExpTables() {
+  document.getElementById('exp-notice').innerHTML = noticeHtml('Unlock to edit budget figures. All changes are saved to this semester only.');
+  if (expView==='bva') { renderBvaTable(); return; }
+  document.getElementById('exp-tables').innerHTML = `<div class="g2">${makeExpPanel('op','Operating')+makeExpPanel('soc','Social')}</div>`;
+}
+
+function renderBvaTable() {
+  const mk = (budgetData, actualData, label) => {
+    const allNames = [...new Set([...budgetData.map(r=>r.name), ...actualData.map(r=>r.name)])];
+    const thru = S().actualThru < 0 ? 0 : S().actualThru + 1; // how many months have actuals
+    const rows = allNames.filter(name => {
+      const bd=budgetData.find(r=>r.name===name), ad=actualData.find(r=>r.name===name);
+      return (bd?rowTotal(bd.vals):0) + (ad?ad.vals.slice(0,thru).reduce((a,v)=>a+v,0):0) > 0;
+    }).map(name => {
+      const bd=budgetData.find(r=>r.name===name), ad=actualData.find(r=>r.name===name);
+      const budgYTD  = bd ? bd.vals.slice(0,thru).reduce((a,v)=>a+v,0) : 0;
+      const actTotal = ad ? ad.vals.slice(0,thru).reduce((a,v)=>a+v,0) : 0;
+      const budgFull = bd ? rowTotal(bd.vals) : 0;
+      const variance = actTotal - budgYTD;
+      const vc = variance>500?'var(--red)':variance<-500?'var(--green)':'var(--text-3)';
+      return `<tr>
+        <td style="font-weight:500">${name}</td>
+        <td class="num">${budgYTD>0?fmt(budgYTD):'—'}</td>
+        <td class="num" style="color:var(--teal)">${actTotal>0?fmt(actTotal):'—'}</td>
+        <td class="num" style="color:${vc};font-weight:500">${actTotal>0||budgYTD>0?(variance>0?'+':'')+fmt(variance):'—'}</td>
+        <td class="num" style="color:var(--text-3)">${budgFull>0?fmt(budgFull):'—'}</td>
+      </tr>`;
+    }).join('');
+    const tBYTD=budgetData.reduce((a,r)=>a+r.vals.slice(0,thru).reduce((b,v)=>b+v,0),0);
+    const tA=actualData.reduce((a,r)=>a+r.vals.slice(0,thru).reduce((b,v)=>b+v,0),0);
+    const tV=tA-tBYTD, tBF=budgetData.reduce((a,r)=>a+rowTotal(r.vals),0);
+    return `<div class="card" style="margin-bottom:1.25rem">
+      <div class="card-head">
+        <span class="card-title">${label}</span>
+        <span class="card-meta">${thru > 0 ? `${monthShort(getSemesterMonths(activeSem)[thru-1])} YTD · Full semester last col` : 'No actuals yet'}</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Line Item</th><th>Budget YTD</th><th>Actual YTD</th><th>Variance</th><th>Full Budget</th></tr></thead>
+          <tbody>${rows||`<tr><td colspan="5" style="padding:20px;text-align:center;color:var(--text-3);font-style:italic;font-family:var(--font-display)">No data to compare yet</td></tr>`}</tbody>
+          ${rows?`<tfoot><tr class="total-row"><td>Total</td><td class="num">${fmt(tBYTD)}</td><td class="num">${fmt(tA)}</td><td class="num" style="color:${tV>0?'var(--red)':'var(--green)'}">${tV>0?'+':''}${fmt(tV)}</td><td class="num">${fmt(tBF)}</td></tr></tfoot>`:''}
+        </table>
+      </div>
+    </div>`;
+  };
+  document.getElementById('exp-tables').innerHTML =
+    mk(S().opData, S().actualOpData, 'Operating — Budget vs. Actual') +
+    mk(S().socData, S().actualSocData, 'Social — Budget vs. Actual');
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTION 10 — DUES
+   Dues data is fully per-semester via S().dues / S().duesCollected
+═══════════════════════════════════════════════════════════════ */
+function renderDues() {
+  document.getElementById('dues-notice').innerHTML = noticeHtml('Edit expected amounts and track actual collections. All dues data is isolated to this semester.');
+  document.getElementById('dues-sem-label').textContent = semConfig[activeSem].label + ' 2026';
+
+  // If this semester has no dues configured, show empty state
+  if (!S().dues || S().dues.length === 0) {
+    document.getElementById('dues-collection-wrap').innerHTML = `
+      <div class="card" style="margin-bottom:1.25rem">
+        <div class="card-head"><span class="card-title">Dues — ${semConfig[activeSem].label}</span></div>
+        <div class="empty-state">No dues brackets configured for ${semConfig[activeSem].label}.${unlocked?' Use the table below to add brackets.':''}</div>
+      </div>`;
+    document.getElementById('spring-dues-body').innerHTML = '';
+    document.getElementById('spring-dues-foot').innerHTML = '';
+    document.getElementById('dues-bars').innerHTML = '<div style="color:var(--text-3);font-size:11px;font-style:italic">No data</div>';
+    document.getElementById('dues-detail-bars').innerHTML = '<div style="color:var(--text-3);font-size:11px;font-style:italic">No data</div>';
+    return;
+  }
+
+  const totalExpected  = S().dues.reduce((a,d)=>a+d.pif+d.pmt,0);
+  const totalCollected = S().duesCollected.reduce((a,v)=>a+v,0);
+  const totalOut       = Math.max(totalExpected-totalCollected,0);
+  const pct            = totalExpected>0?Math.round(totalCollected/totalExpected*100):0;
+  const pctCol         = pct>=75?'var(--green)':pct>=40?'var(--amber)':'var(--red)';
+  const pctBg          = pct>=75?'var(--green-bg)':pct>=40?'var(--amber-bg)':'var(--red-bg)';
+
+  document.getElementById('dues-collection-wrap').innerHTML = `
+    <div class="card" style="margin-bottom:1.25rem">
+      <div class="card-head">
+        <span class="card-title">Actual Collections — ${semConfig[activeSem].label} 2026</span>
+        <span style="font-family:var(--font-display);font-style:italic;font-size:12px;color:${pctCol}">${pct}% collected</span>
+      </div>
+      <div class="card-body">
+        <div class="g3" style="margin-bottom:1.5rem">
+          <div class="position-cell">
+            <div class="stat-label">Total Collected</div>
+            <div style="font-family:var(--font-display);font-size:24px;font-weight:600;color:var(--green);line-height:1;margin:.3rem 0">${fmt(totalCollected)}</div>
+            <div class="stat-sub">of ${fmt(totalExpected)} expected</div>
+          </div>
+          <div class="position-cell">
+            <div class="stat-label">Outstanding</div>
+            <div style="font-family:var(--font-display);font-size:24px;font-weight:600;color:${totalOut>0?'var(--red)':'var(--green)'};line-height:1;margin:.3rem 0">${fmt(totalOut)}</div>
+            <div class="stat-sub">still to collect</div>
+          </div>
+          <div class="position-cell" style="background:${pctBg}">
+            <div class="stat-label">Collection Rate</div>
+            <div style="font-family:var(--font-display);font-size:34px;font-weight:700;color:${pctCol};line-height:1;margin:.3rem 0">${pct}%</div>
+            <div class="progress-track" style="margin-top:.5rem"><div class="progress-fill" style="width:${pct}%;background:${pctCol}"></div></div>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th>Bracket</th><th>Expected</th><th>Collected</th><th>Outstanding</th>
+              <th style="width:140px">Progress</th><th style="width:44px">%</th>
+              ${unlocked?'<th style="width:120px">Update</th>':''}
+            </tr></thead>
+            <tbody>
+              ${S().dues.map((d,i)=>{
+                const exp=d.pif+d.pmt, col=S().duesCollected[i]||0, out=Math.max(exp-col,0);
+                const p=exp>0?Math.round(col/exp*100):0;
+                const pc=p>=75?'var(--green)':p>=40?'var(--amber)':'var(--red)';
+                return`<tr>
+                  <td style="font-weight:500">${d.bracket}</td>
+                  <td class="num">${fmt(exp)}</td>
+                  <td class="num" style="color:var(--green);font-weight:500">${fmt(col)}</td>
+                  <td class="num" style="color:${out>0?'var(--red)':'var(--green)'}">${fmt(out)}</td>
+                  <td><div class="progress-track"><div class="progress-fill" style="width:${p}%;background:${pc}"></div></div></td>
+                  <td class="pct" style="color:${pc};font-weight:500">${p}%</td>
+                  ${unlocked?`<td><input class="ed" type="number" value="${col}" min="0" max="${exp}" style="width:105px"
+                    onchange="S().duesCollected[${i}]=Math.min(+this.value,${exp});persistSemStore();renderDues()"></td>`:''}
+                </tr>`;
+              }).join('')}
+            </tbody>
+            <tfoot><tr class="total-row">
+              <td>Total</td><td class="num">${fmt(totalExpected)}</td>
+              <td class="num">${fmt(totalCollected)}</td><td class="num">${fmt(totalOut)}</td>
+              <td colspan="${unlocked?3:2}"><span style="font-family:var(--font-display);font-size:14px;color:${pctCol}">${pct}% overall</span></td>
+            </tr></tfoot>
+          </table>
+        </div>
+      </div>
+    </div>`;
+
+  const totalRev = S().revData.reduce((a,v)=>a+v,0)||1;
+  const tPif=S().dues.reduce((a,d)=>a+d.pif,0), tPmt=S().dues.reduce((a,d)=>a+d.pmt,0);
+  const tN=S().dues.reduce((a,d)=>a+d.n,0), tot=tPif+tPmt||1;
+
+  document.getElementById('spring-dues-body').innerHTML = S().dues.map((d,i)=>`
+    <tr>
+      <td>${d.bracket}</td>
+      <td class="num"><input class="ed ed-wide" type="number" value="${d.n}" ${unlocked?'':'disabled'}
+        onchange="S().dues[${i}].n=+this.value;S().dues[${i}].pif=Math.round(S().dues[${i}].n*S().dues[${i}].rate*.8);S().dues[${i}].pmt=Math.round(S().dues[${i}].n*S().dues[${i}].rate*.6);persistSemStore();renderDues()"></td>
+      <td class="num"><input class="ed" type="number" value="${d.rate}" ${unlocked?'':'disabled'}
+        onchange="S().dues[${i}].rate=+this.value;S().dues[${i}].pif=Math.round(S().dues[${i}].n*S().dues[${i}].rate*.8);S().dues[${i}].pmt=Math.round(S().dues[${i}].n*S().dues[${i}].rate*.6);persistSemStore();renderDues()"></td>
+      <td class="num"><input class="ed" type="number" value="${d.pif}" ${unlocked?'':'disabled'}
+        onchange="S().dues[${i}].pif=+this.value;persistSemStore();renderDues()"></td>
+      <td class="num"><input class="ed" type="number" value="${d.pmt}" ${unlocked?'':'disabled'}
+        onchange="S().dues[${i}].pmt=+this.value;persistSemStore();renderDues()"></td>
+      <td class="num" style="font-weight:500">${fmt(d.pif+d.pmt)}</td>
+      <td class="pct">${Math.round((d.pif+d.pmt)/totalRev*100)}%</td>
+    </tr>`).join('');
+  document.getElementById('spring-dues-foot').innerHTML = `
+    <tr class="total-row"><td>Total</td><td class="num">${tN}</td><td>—</td>
+    <td class="num">${fmt(tPif)}</td><td class="num">${fmt(tPmt)}</td>
+    <td class="num">${fmt(tPif+tPmt)}</td><td class="pct">${Math.round((tPif+tPmt)/totalRev*100)}%</td></tr>`;
+
+  const pPif = Math.round(tPif/tot*100);
+  document.getElementById('dues-bars').innerHTML = `
+    <div style="margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-2);margin-bottom:5px"><span>Paid in full</span><span style="font-weight:500">${fmt(tPif)} · ${pPif}%</span></div>
+      <div class="progress-track" style="height:7px"><div class="progress-fill" style="width:${pPif}%;background:var(--crimson)"></div></div>
+    </div>
+    <div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-2);margin-bottom:5px"><span>Payment plan</span><span style="font-weight:500">${fmt(tPmt)} · ${100-pPif}%</span></div>
+      <div class="progress-track" style="height:7px"><div class="progress-fill" style="width:${100-pPif}%;background:var(--teal)"></div></div>
+    </div>`;
+  const maxB=Math.max(...S().dues.map(d=>d.pif+d.pmt),1);
+  document.getElementById('dues-detail-bars').innerHTML = S().dues.map(d=>`
+    <div class="bar-row">
+      <div class="bar-label" style="font-size:10px;width:110px">${d.bracket.split(' ').slice(0,2).join(' ')}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${Math.round((d.pif+d.pmt)/maxB*100)}%;background:var(--crimson)"></div></div>
+      <div class="bar-amt" style="font-size:11px">${fmt(d.pif+d.pmt)}</div>
+    </div>`).join('');
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTION 11 — PRESIDENT VIEW
+═══════════════════════════════════════════════════════════════ */
+function renderPresident() {
+  const months = getSemesterMonths(activeSem);
+  const bals   = getBalances();
+  if (!bals.length) {
+    document.getElementById('pres-status-box').innerHTML = '<div class="empty-state">No months configured for this semester.</div>';
+    document.getElementById('pres-grid').innerHTML = '';
+    document.getElementById('pres-events').innerHTML = '';
+    document.getElementById('pres-months').innerHTML = '';
+    return;
+  }
+  const endBal    = bals[bals.length - 1] || 0;
+  const minBal    = Math.min(...bals);
+  const lowestIdx = bals.indexOf(minBal);
+  const totalRev  = S().revData.slice(0, months.length).reduce((a,v) => a + v, 0);
+  // Total expenses: use actual spend for confirmed months, budget for future —
+  // same rule as getExpForMonthIdx() so this number reconciles with the balance model.
+  const totalExp  = months.reduce((sum, _, i) => sum + getExpForMonthIdx(i), 0);
+  let cls, icon, word, line;
+  if (endBal>=5000&&minBal>=0) {
+    cls='good'; icon='✅'; word="We're Good.";
+    line=`End of semester balance is <strong>${fmt(endBal)}</strong>. Revenue is covering everything. Nothing to worry about.`;
+  } else if (endBal>=2000||minBal>=0) {
+    cls='caution'; icon='⚠️'; word='Watch It.';
+    const reason=endBal<5000?`End balance is only ${fmt(endBal)}.`:`Balance dips to ${fmt(minBal)} in ${monthName(months[lowestIdx])}.`;
+    line=`${reason} No surprise expenses. Dues need to come in on time.`;
+  } else {
+    cls='bad'; icon='🚨'; word='We Have a Problem.';
+    line=endBal<0?`Projected end balance is <strong>${fmt(endBal)}</strong>. That's a deficit. Talk to the treasurer now.`:`Balance hits <strong>${fmt(minBal)}</strong> in ${months[lowestIdx]?monthName(months[lowestIdx]):'—'}. Dangerously low.`;
+  }
+  document.getElementById('pres-status-box').innerHTML = `
+    <div class="pres-status ${cls}" style="margin-bottom:1.25rem">
+      <div class="pres-icon">${icon}</div>
+      <div class="pres-word">${word}</div>
+      <div class="pres-line">${line}</div>
+    </div>`;
+  const endColor=balColor(endBal), minColor=balColor(minBal);
+  document.getElementById('pres-grid').innerHTML = `
+    <div class="pres-card"><div class="pres-card-label">Total revenue expected</div><div class="pres-card-val" style="color:var(--teal)">${fmt(totalRev)}</div><div class="pres-card-sub">${semConfig[activeSem].label} collections</div></div>
+    <div class="pres-card"><div class="pres-card-label">Total going out</div><div class="pres-card-val" style="color:var(--crimson)">${fmt(totalExp)}</div><div class="pres-card-sub">Operating + social</div></div>
+    <div class="pres-card"><div class="pres-card-label">End of semester</div><div class="pres-card-val" style="color:${endColor}">${fmt(endBal)}</div><div class="pres-card-sub">What's left after everything</div></div>
+    <div class="pres-card"><div class="pres-card-label">Tightest month</div><div class="pres-card-val" style="color:${minColor}">${fmt(minBal)}</div><div class="pres-card-sub">${months[lowestIdx]?monthName(months[lowestIdx]):'—'} — lowest point</div></div>`;
+  // Largest expenses across all categories in this semester
+  const bigExp = [...S().opData, ...S().socData]
+    .map(r=>({name:r.name, amt:rowTotal(r.vals.slice(0,months.length))}))
+    .filter(e=>e.amt>0).sort((a,b)=>b.amt-a.amt).slice(0,5);
+  document.getElementById('pres-events').innerHTML = bigExp.length
+    ? bigExp.map(e=>`<div class="pres-event-row"><div><div class="pres-event-name">${e.name}</div></div><div class="pres-event-amt">${fmt(e.amt)}</div></div>`).join('')
+    : '<div class="empty-state" style="font-size:13px">No expenses budgeted yet</div>';
+  const maxB=Math.max(...bals.map(Math.abs),1);
+  document.getElementById('pres-months').innerHTML = bals.map((b,i)=>{
+    const bar=Math.round(Math.abs(b)/maxB*100), col=balChartColor(b), textCol=balColor(b);
+    return `<div class="pres-month-row">
+      <div style="width:68px;font-size:11px;font-weight:500;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em">${months[i]?monthShort(months[i]):'—'}</div>
+      <div style="flex:1;height:5px;background:var(--bg-2);border-radius:2px;overflow:hidden"><div style="width:${bar}%;height:100%;background:${col};border-radius:2px"></div></div>
+      <div style="width:80px;text-align:right;font-family:var(--font-display);font-size:14px;font-weight:600;color:${textCol}">${fmt(b)}</div>
+    </div>`;
+  }).join('');
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTION 12 — SNAPSHOTS
+   Snapshots save the entire semStore (all three semesters at once).
+═══════════════════════════════════════════════════════════════ */
+// ── SNAPSHOT STORAGE (localStorage) ──────────────────────────
+// Keys: 'snap:NAME' → JSON string. Index: 'ka-snap-index' → JSON array of names.
+// Fully synchronous — no async/await needed.
+
+function snapGetIndex() {
+  try { return JSON.parse(localStorage.getItem('ka-snap-index') || '[]'); } catch(e) { return []; }
+}
+function snapSetIndex(arr) {
+  try { localStorage.setItem('ka-snap-index', JSON.stringify(arr)); } catch(e) {}
+}
+
+function saveSnapshot() {
+  if (!unlocked) { showToast('Unlock to save'); return; }
+  const name = document.getElementById('snap-name').value.trim();
+  if (!name) { showToast('Enter a name'); return; }
+  persistSemStore();
+  const payload = { semStore, activeSem, savedAt: new Date().toLocaleDateString() };
+  try {
+    localStorage.setItem('snap:' + name, JSON.stringify(payload));
+    // Add to index if not already present
+    const idx = snapGetIndex();
+    if (!idx.includes(name)) { idx.push(name); snapSetIndex(idx); }
+    showToast('Saved: ' + name);
+    renderSnapshotsList();
+  } catch(e) { showToast('Save failed — storage may be full'); }
+}
+
+function loadSnapshot(name) {
+  try {
+    const raw = localStorage.getItem('snap:' + name);
+    if (!raw) { showToast('Not found'); return; }
+    const d = JSON.parse(raw);
+    if (d.semStore) {
+      semStore = {
+        spring: d.semStore.spring || defaultSpring(),
+        summer: d.semStore.summer || defaultSummer(),
+        fall:   d.semStore.fall   || defaultFall(),
+      };
+      persistSemStore();
+    }
+    if (d.activeSem) activeSem = d.activeSem;
+    document.getElementById('snap-name').value = name;
+    renderSemSwitcher(); refreshAll();
+    show('overview', document.querySelector('.nav-item'));
+    showToast('Loaded: ' + name);
+  } catch(e) { showToast('Load failed'); }
+}
+
+function deleteSnapshot(name) {
+  if (!unlocked) { showToast('Unlock to delete'); return; }
+  if (!confirm(`Delete "${name}"?`)) return;
+  try {
+    localStorage.removeItem('snap:' + name);
+    const idx = snapGetIndex().filter(n => n !== name);
+    snapSetIndex(idx);
+    showToast('Deleted');
+    renderSnapshotsList();
+  } catch(e) { showToast('Delete failed'); }
+}
+
+function renderSnapshotsList() {
+  const el = document.getElementById('snapshots-list');
+  try {
+    const names = snapGetIndex();
+    if (!names.length) {
+      el.innerHTML = '<div class="empty-state">No snapshots yet — unlock, name the current state, and save.</div>';
+      return;
+    }
+    el.innerHTML = names.map(name => {
+      let date = '';
+      try { const d = JSON.parse(localStorage.getItem('snap:' + name)); date = d.savedAt || ''; } catch(e) {}
+      return `
+        <div class="snap-row">
+          <div><div class="snap-name-text">${name}</div><div class="snap-date">Saved ${date} · All semesters</div></div>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-teal btn-sm" onclick="loadSnapshot('${name}')">Load</button>
+            <button class="btn btn-danger btn-sm" ${unlocked?'':'disabled'} onclick="deleteSnapshot('${name}')">Delete</button>
+          </div>
+        </div>`;
+    }).join('');
+  } catch(e) { el.innerHTML = '<div class="empty-state">Could not load snapshots.</div>'; }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   SECTION 13 — NAV + GLOBAL REFRESH
+═══════════════════════════════════════════════════════════════ */
+const pageTitles = { overview:'Overview', expenses:'Expenses', dues:'Dues', snapshots:'Snapshots', president:'President View' };
+function show(page, btn) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+  document.getElementById(page).classList.add('active');
+  if (btn) btn.classList.add('active');
+  document.getElementById('topbar-title').textContent = pageTitles[page]||page;
+  if (page==='snapshots') renderSnapshotsList();
+  if (page==='president') renderPresident();
+}
+function showToast(msg) {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2500);
+}
+function refreshAll() {
+  renderStats(); renderSemProgress(); renderChart(); renderBars();
+  renderExpMonthTabs(); renderExpMonthStats(); renderExpTables();
+  renderDues();
+}
+
+/* ── INIT ── */
+document.getElementById('sidebar-sub-text').textContent = semConfig.chapter || 'Florida State';
+document.title = 'KA Treasury · ' + (semConfig.chapter || 'Florida State');
+renderSemSwitcher();
+refreshAll();
+</script>
+</html>
