@@ -28,4 +28,23 @@
   </g>
 
   <text x="450" y="890" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="74" letter-spacing="16" fill="url(#kaGold)">GAMMA ETA</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 720" role="img" aria-labelledby="title desc">
+  <title id="title">KA Gamma Eta Logo</title>
+  <desc id="desc">KA letters above crossed sabers in garnet and gold.</desc>
+  <defs>
+    <linearGradient id="garnet" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#9E2A3A"/>
+      <stop offset="100%" stop-color="#5C1A26"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#D9B15F"/>
+      <stop offset="100%" stop-color="#B89A4A"/>
+    </linearGradient>
+  </defs>
+  <rect width="720" height="720" rx="24" fill="transparent"/>
+  <text x="360" y="260" text-anchor="middle" font-size="200" font-family="Georgia, 'Times New Roman', serif" font-weight="700" fill="url(#garnet)" letter-spacing="8">KA</text>
+  <path d="M90 380 C 220 520, 500 520, 630 380" fill="none" stroke="url(#gold)" stroke-width="22" stroke-linecap="round"/>
+  <path d="M170 520 Q360 510 550 520" fill="none" stroke="url(#garnet)" stroke-width="14" stroke-linecap="round"/>
+  <path d="M170 520 Q360 544 550 520" fill="none" stroke="url(#gold)" stroke-width="11" stroke-linecap="round"/>
+  <text x="360" y="620" text-anchor="middle" font-size="48" font-family="'IBM Plex Sans', Arial, sans-serif" letter-spacing="10" fill="#8A7030">GAMMA ETA</text>
 </svg>
