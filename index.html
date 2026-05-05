@@ -28,6 +28,30 @@
 }
 html,body{height:100%;font-family:var(--font-body);background:var(--bg);color:var(--text);font-size:13px;line-height:1.55;-webkit-font-smoothing:antialiased}
 
+
+/* ── INTRO EXPERIENCE ── */
+.intro-screen{position:fixed;inset:0;z-index:1200;display:grid;place-items:center;padding:1.5rem;background:radial-gradient(circle at 20% 20%,rgba(184,154,74,.24),transparent 46%),linear-gradient(145deg,#2b0f16,#14070b 56%,#27110f);transition:opacity .6s ease,visibility .6s ease}
+.intro-screen.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.intro-glow{position:absolute;width:min(80vw,760px);height:min(80vw,760px);border-radius:50%;background:radial-gradient(circle,rgba(184,154,74,.32),rgba(184,154,74,0) 68%);filter:blur(8px);animation:pulseGlow 4.5s ease-in-out infinite}
+.intro-card{position:relative;max-width:620px;width:100%;text-align:center;background:rgba(255,255,255,.94);border:1px solid rgba(184,154,74,.4);border-radius:28px;padding:2.4rem 2rem;backdrop-filter:blur(6px);box-shadow:0 24px 54px rgba(0,0,0,.32);animation:fadeUp .8s ease both}
+.intro-logo{width:min(54vw,280px);height:auto;display:block;margin:0 auto 1rem;filter:drop-shadow(0 10px 24px rgba(125,37,53,.28))}
+.logo-frame{display:inline-flex;align-items:center;justify-content:center;width:min(54vw,280px);margin:0 auto 1rem}
+.logo-object{width:100%;aspect-ratio:1/1;border:0;display:block}
+.logo-fallback{width:100%;height:auto;display:block}
+.intro-kicker{letter-spacing:.18em;text-transform:uppercase;font-size:10px;color:var(--gold-2);font-weight:600;margin-bottom:.5rem}
+.intro-card h1{font-family:var(--font-display);font-size:clamp(1.7rem,4vw,2.6rem);color:var(--crimson-2);margin-bottom:.8rem}
+.intro-copy{max-width:48ch;margin:0 auto 1.4rem;color:var(--text-2);font-size:13px}
+.intro-cta{font-size:12px;padding:.75rem 1.15rem;box-shadow:0 10px 20px rgba(125,37,53,.26)}
+.sidebar-logo{width:56px;height:auto;display:block;margin-bottom:.55rem;filter:drop-shadow(0 8px 10px rgba(0,0,0,.2))}
+.layout{opacity:0;transform:translateY(8px);transition:opacity .45s ease,transform .45s ease}
+.layout.app-ready{opacity:1;transform:none}
+.card,.stat-card,.btn,.nav-item,.month-tab,.sem-tab{transition:all .22s ease}
+.card:hover,.stat-card:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(26,23,20,.08)}
+.btn:active{transform:translateY(1px) scale(.99)}
+input.ed:focus,input.ed-name:focus,.snap-input:focus{transform:translateY(-1px)}
+@keyframes pulseGlow{0%,100%{transform:scale(1);opacity:.8}50%{transform:scale(1.06);opacity:1}}
+@media (max-width:760px){.intro-card{padding:2rem 1.2rem}.sidebar-logo{width:44px}}
+
 /* ── EDIT-MODE MODAL ── */
 .overlay{position:fixed;inset:0;background:rgba(26,23,20,.55);display:flex;align-items:center;justify-content:center;z-index:1000;backdrop-filter:blur(3px)}
 .modal-box{background:var(--surface);border-radius:var(--r-xl);border:1px solid var(--border);width:360px;padding:2.5rem 2rem;text-align:center}
@@ -298,6 +322,22 @@ tr.drag-over td{border-top:2px solid var(--teal)}
 }
 </style>
 
+
+<div id="intro-screen" class="intro-screen" aria-label="Welcome screen">
+  <div class="intro-glow"></div>
+  <div class="intro-card">
+    <div class="logo-frame intro-logo" role="img" aria-label="Kappa Alpha Gamma Eta logo">
+      <object class="logo-object" data="assets/ka-logo.pdf" type="application/pdf">
+        <img src="assets/ka-logo-fsu.svg" alt="Kappa Alpha Gamma Eta logo" class="logo-fallback">
+      </object>
+    </div>
+    <p class="intro-kicker">Kappa Alpha • Gamma Eta</p>
+    <h1>KA Treasury Dashboard</h1>
+    <p class="intro-copy">A polished treasury workspace for disciplined planning, confident decisions, and semester-level visibility.</p>
+    <button id="enter-dashboard" class="btn btn-primary intro-cta">Enter Dashboard</button>
+  </div>
+</div>
+
 <!-- EDIT-MODE MODAL (UI protection only — not real security) -->
 <div class="overlay" id="lock-modal">
   <div class="modal-box">
@@ -375,6 +415,9 @@ tr.drag-over td{border-top:2px solid var(--teal)}
 <div class="layout">
   <aside class="sidebar">
     <div class="sidebar-brand">
+      <object class="sidebar-logo" data="assets/ka-logo.pdf" type="application/pdf" aria-label="KA logo">
+        <img src="assets/ka-logo-fsu.svg" alt="KA logo" class="logo-fallback">
+      </object>
       <div class="sidebar-monogram">ΚΑ</div>
       <div class="sidebar-title">Kappa Alpha Order</div>
       <div class="sidebar-sub" id="sidebar-sub-text">Florida State</div>
@@ -1871,6 +1914,17 @@ function refreshAll() {
 
 /* ── INIT ── */
 (function init() {
+  const intro = document.getElementById('intro-screen');
+  const layout = document.querySelector('.layout');
+  const enterBtn = document.getElementById('enter-dashboard');
+  const hasEntered = sessionStorage.getItem('ka-intro-seen') === '1';
+  function enterApp(){
+    intro?.classList.add('hidden');
+    layout?.classList.add('app-ready');
+    sessionStorage.setItem('ka-intro-seen','1');
+  }
+  if (hasEntered) { enterApp(); }
+  enterBtn?.addEventListener('click', enterApp);
   const ch = semConfig.chapter || 'Florida State';
   document.getElementById('sidebar-sub-text').textContent = ch;
   document.title = 'KA Treasury · ' + ch;
