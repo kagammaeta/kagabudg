@@ -293,14 +293,19 @@ html, body {
 
   <div class="logo-wrap" id="logo-wrap">
     <img
-      src="ka-logo.svg"
-      alt="Kappa Alpha Gamma Eta chapter crest"
-      class="logo-img"
-      id="logo-img"
-      draggable="false"
-      onerror="this.style.display='none';document.getElementById('logo-fallback').style.display='block'"
-    >
-    <div class="logo-fallback" id="logo-fallback" aria-hidden="true">ΚΑ</div>
+src="ka-logo.svg"
+  alt="Kappa Alpha Gamma Eta chapter crest"
+  class="logo-img"
+  id="logo-img"
+  draggable="false"
+  onerror="this.style.display='none';document.getElementById('logo-fallback').style.display='block'"
+>
+
+<!-- Optional sword overlays for unlock animation -->
+<img src="sword-left.svg" class="sword sword-left" alt="" aria-hidden="true" draggable="false">
+<img src="sword-right.svg" class="sword sword-right" alt="" aria-hidden="true" draggable="false">
+
+<div class="logo-fallback" id="logo-fallback" aria-hidden="true">ΚΑ</div>
 
     <button
       class="sword-btn"
