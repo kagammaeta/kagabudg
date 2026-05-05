@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 900" role="img" aria-labelledby="title desc">
+  <title id="title">KA Gamma Eta Logo</title>
+  <desc id="desc">Refined KA monogram with crossed sabers and Gamma Eta wordmark in garnet and gold.</desc>
+  <defs>
+    <linearGradient id="garnet" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F4E4B8"/>
+      <stop offset="1" stop-color="#DDBA6A"/>
+    </linearGradient>
+    <filter id="goldGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#2f0d16" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <g fill="url(#garnet)" filter="url(#goldGlow)">
+    <text x="460" y="290" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="286" font-weight="700" letter-spacing="8">KA</text>
+  </g>
+
+  <g fill="none" stroke="url(#garnet)" stroke-linecap="round" stroke-linejoin="round" filter="url(#goldGlow)">
+    <path d="M90 390 C 245 560, 675 560, 830 390" stroke-width="16"/>
+    <path d="M140 610 Q460 585 780 610" stroke-width="14"/>
+    <path d="M780 610 Q460 670 140 610" stroke-width="11"/>
+    <circle cx="140" cy="610" r="12" fill="url(#garnet)"/>
+    <circle cx="780" cy="610" r="12" fill="url(#garnet)"/>
+    <path d="M173 616c3 22 21 41 53 41 30 0 49-17 53-41" stroke-width="10"/>
+    <path d="M640 616c3 22 21 41 53 41 30 0 49-17 53-41" stroke-width="10"/>
+  </g>
+
+  <text x="460" y="810" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="68" font-weight="700" letter-spacing="14" fill="url(#garnet)" filter="url(#goldGlow)">GAMMA ETA</text>
+</svg>
