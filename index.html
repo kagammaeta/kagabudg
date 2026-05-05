@@ -6,174 +6,224 @@
 <title>KA Treasury · Gamma Eta</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Cormorant+Garamond:ital,wght@0,300;1,300&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
   --gold: #CEB888;
   --gold-dim: #9A8352;
+  --gold-pale: rgba(206,184,136,.08);
+  --garnet: #782F40;
   --cream: #F5F0E8;
+  --cream-2: rgba(245,240,232,.7);
+  --cream-3: rgba(245,240,232,.38);
 }
 
 html, body {
   height: 100%;
-  background: #130610;
+  background: #0e040a;
   overflow: hidden;
   font-family: 'Cormorant Garamond', Georgia, serif;
   color: var(--cream);
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Deep garnet-to-black background */
+/* ── LAYERED BACKGROUND ── */
 .bg {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
+  position: fixed; inset: 0; z-index: 0;
   background:
-    radial-gradient(ellipse 85% 50% at 50% 5%, rgba(120,47,64,0.48) 0%, transparent 68%),
-    radial-gradient(ellipse 65% 40% at 50% 100%, rgba(74,26,38,0.6) 0%, transparent 62%),
-    linear-gradient(170deg, #130610 0%, #2a0c14 48%, #130610 100%);
+    radial-gradient(ellipse 90% 55% at 50% -5%, rgba(120,47,64,.55) 0%, transparent 65%),
+    radial-gradient(ellipse 70% 45% at 15% 100%, rgba(74,26,38,.45) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 85% 90%, rgba(46,13,22,.6) 0%, transparent 55%),
+    linear-gradient(175deg, #0e040a 0%, #200a10 45%, #0e040a 100%);
 }
 
-/* Gold hairline at top */
+/* Grain texture overlay */
+.bg::after {
+  content: '';
+  position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  opacity: .025;
+  pointer-events: none;
+}
+
+/* Gold rule top */
 .top-rule {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  height: 1px;
-  z-index: 10;
-  background: linear-gradient(90deg, transparent 5%, var(--gold-dim) 35%, var(--gold) 50%, var(--gold-dim) 65%, transparent 95%);
+  position: fixed; top: 0; left: 0; right: 0; height: 1px; z-index: 20;
+  background: linear-gradient(90deg, transparent 5%, var(--gold-dim) 30%, var(--gold) 50%, var(--gold-dim) 70%, transparent 95%);
 }
 
+/* ── PAGE ── */
 .page {
-  position: relative;
-  z-index: 1;
+  position: relative; z-index: 1;
   height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
   padding: 2rem;
-  animation: rise 1.2s cubic-bezier(0.22, 0.8, 0.36, 1) both;
+  animation: pageRise 1.4s cubic-bezier(0.22, 0.8, 0.36, 1) both;
 }
 
-@keyframes rise {
-  from { opacity: 0; transform: translateY(14px); }
+@keyframes pageRise {
+  from { opacity: 0; transform: translateY(16px); }
   to   { opacity: 1; transform: none; }
 }
 
-/* Kicker above logo */
+/* ── KICKER ── */
 .kicker {
   font-family: 'Cinzel', serif;
-  font-size: clamp(8px, 1vw, 10px);
-  letter-spacing: 0.34em;
+  font-size: clamp(7.5px, .95vw, 9.5px);
+  letter-spacing: .38em;
   color: var(--gold-dim);
   text-transform: uppercase;
-  margin-bottom: 2rem;
+  margin-bottom: 2.25rem;
   opacity: 0;
-  animation: rise 1s ease 0.35s both;
+  animation: fadeSlide 1s ease .38s both;
+}
+
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
 }
 
 /* ── LOGO ── */
 .logo-wrap {
   position: relative;
-  width: clamp(190px, 24vw, 300px);
-  margin-bottom: 2rem;
+  width: clamp(180px, 22vw, 290px);
+  margin-bottom: 2.25rem;
   opacity: 0;
-  animation: logoUp 1.2s cubic-bezier(0.22, 0.8, 0.36, 1) 0.08s both;
+  animation: logoRise 1.3s cubic-bezier(0.16, 1, 0.3, 1) .1s both;
+  /* subtle ambient glow behind the crest */
+  filter: drop-shadow(0 0 60px rgba(120,47,64,.2));
 }
 
-@keyframes logoUp {
-  from { opacity: 0; transform: scale(0.93) translateY(18px); }
+@keyframes logoRise {
+  from { opacity: 0; transform: scale(.91) translateY(22px); }
   to   { opacity: 1; transform: scale(1) translateY(0); }
 }
 
-.logo-wrap img {
+/* Logo image — white by default, gold on hover */
+.logo-img {
   width: 100%;
   height: auto;
   display: block;
   pointer-events: none;
   user-select: none;
-  /* Invert to white, then add subtle glow */
+  -webkit-user-drag: none;
+  transition: filter .55s cubic-bezier(0.4, 0, 0.2, 1), transform .55s cubic-bezier(0.4, 0, 0.2, 1);
   filter:
     brightness(0) invert(1)
-    drop-shadow(0 0 28px rgba(206,184,136,0.10))
-    drop-shadow(0 6px 20px rgba(0,0,0,0.8));
-  transition: filter 0.5s ease;
+    drop-shadow(0 0 20px rgba(206,184,136,.08))
+    drop-shadow(0 8px 24px rgba(0,0,0,.85));
 }
 
-/* On sword hover: warm gold shift — no ring, no border, just color */
-.logo-wrap.hovered img {
+/* Monogram fallback shown when SVG fails */
+.logo-fallback {
+  display: none;
+  font-family: 'Cinzel', serif;
+  font-size: clamp(56px, 9vw, 96px);
+  font-weight: 600;
+  color: rgba(245,240,232,.9);
+  letter-spacing: .04em;
+  line-height: 1;
+  text-align: center;
+  padding: 1rem;
+  text-shadow: 0 0 24px rgba(206,184,136,.12), 0 8px 24px rgba(0,0,0,.8);
+  transition: color .55s ease, text-shadow .55s ease;
+  user-select: none;
+}
+
+/* Hover states — applied via JS class on .logo-wrap */
+.logo-wrap.hovered .logo-img {
   filter:
     brightness(0) saturate(100%)
-    invert(87%) sepia(22%) saturate(420%) hue-rotate(338deg) brightness(106%)
-    drop-shadow(0 0 40px rgba(206,184,136,0.38))
-    drop-shadow(0 6px 20px rgba(0,0,0,0.7));
+    invert(87%) sepia(24%) saturate(400%) hue-rotate(337deg) brightness(108%)
+    drop-shadow(0 0 36px rgba(206,184,136,.42))
+    drop-shadow(0 8px 24px rgba(0,0,0,.7));
+  transform: scale(1.025);
 }
 
-/* ── SWORD HITZONE ── */
-/*
-  The swords in your logo sit in the lower ~40% of the image.
-  This invisible button covers exactly that zone.
-  No visual feedback except the logo color shift above.
-*/
+.logo-wrap.hovered .logo-fallback {
+  color: var(--gold-light, #E8D5A3);
+  text-shadow: 0 0 40px rgba(206,184,136,.4), 0 8px 24px rgba(0,0,0,.7);
+}
+
+/* Entering state — warms gold just before nav */
+.logo-wrap.entering .logo-img {
+  filter:
+    brightness(0) saturate(100%)
+    invert(85%) sepia(30%) saturate(500%) hue-rotate(335deg) brightness(112%)
+    drop-shadow(0 0 52px rgba(206,184,136,.55))
+    drop-shadow(0 8px 24px rgba(0,0,0,.6));
+  transform: scale(1.04);
+  transition: filter .3s ease, transform .3s ease;
+}
+
+/* ── SWORD HITZONE — desktop only ── */
 .sword-btn {
   position: absolute;
-  bottom: 4%;
-  left: 4%;
-  right: 4%;
-  height: 42%;
+  bottom: 5%;
+  left: 6%; right: 6%;
+  height: 40%;
   background: transparent;
   border: none;
   outline: none;
   cursor: pointer;
-  /* No ::before, no ::after, no rings. Clean. */
+  border-radius: 50% 50% 44% 44%;
+  z-index: 10;
+  /* No ring, no border — the gold shift IS the feedback */
 }
 
 .sword-btn:focus-visible {
-  /* Accessibility only — keyboard users see a faint outline */
-  outline: 1px solid rgba(206,184,136,0.3);
-  outline-offset: 2px;
+  outline: 1px solid rgba(206,184,136,.3);
+  outline-offset: 3px;
+  border-radius: 50%;
+}
+
+/* On mobile, whole logo area becomes clickable */
+@media (hover: none), (max-width: 600px) {
+  .sword-btn {
+    inset: 0;
+    height: 100%;
+    border-radius: var(--r-lg, 12px);
+  }
 }
 
 /* ── TITLE ── */
 .title-block {
   text-align: center;
   opacity: 0;
-  animation: rise 1s ease 0.5s both;
+  animation: fadeSlide 1s ease .52s both;
 }
 
 .title {
   font-family: 'Cinzel', serif;
-  font-size: clamp(18px, 2.8vw, 34px);
+  font-size: clamp(20px, 3.2vw, 38px);
   font-weight: 600;
   color: var(--cream);
-  letter-spacing: 0.08em;
+  letter-spacing: .09em;
   line-height: 1.1;
-  margin-bottom: 0.45rem;
+  margin-bottom: .5rem;
 }
-
 .title span { color: var(--gold); }
 
 .subtitle {
   font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(12px, 1.4vw, 16px);
+  font-size: clamp(12px, 1.5vw, 16px);
   font-weight: 300;
   font-style: italic;
-  color: rgba(206,184,136,0.45);
-  letter-spacing: 0.05em;
+  color: var(--cream-3);
+  letter-spacing: .06em;
 }
 
 /* ── DIVIDER ── */
 .divider {
-  display: flex;
-  align-items: center;
-  gap: 0.85rem;
-  margin-top: 1.5rem;
-  width: clamp(140px, 20vw, 240px);
+  display: flex; align-items: center; gap: .9rem;
+  margin-top: 1.65rem;
+  width: clamp(130px, 18vw, 220px);
   opacity: 0;
-  animation: rise 1s ease 0.65s both;
+  animation: fadeSlide 1s ease .66s both;
 }
-
 .divider-line {
   flex: 1; height: 1px;
   background: linear-gradient(90deg, transparent, var(--gold-dim));
@@ -181,70 +231,95 @@ html, body {
 .divider-line:last-child {
   background: linear-gradient(90deg, var(--gold-dim), transparent);
 }
-.divider-pip {
+.divider-diamond {
   width: 4px; height: 4px;
   background: var(--gold-dim);
   transform: rotate(45deg);
   flex-shrink: 0;
 }
 
-/* ── PAGE EXIT ── */
-.flash {
-  position: fixed;
-  inset: 0;
-  background: rgba(245,240,232,0.04);
-  pointer-events: none;
+/* ── DELAYED HINT ── */
+/* Appears ~1.8s after load, fades in slowly */
+.entry-hint {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(7px, .85vw, 8.5px);
+  letter-spacing: .28em;
+  color: rgba(206,184,136,.28);
+  text-transform: uppercase;
+  margin-top: 1.1rem;
   opacity: 0;
-  z-index: 300;
-  transition: opacity 0.15s ease;
+  animation: hintFade 1.2s ease 1.9s both;
+  pointer-events: none;
+  text-align: center;
+}
+
+@keyframes hintFade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Hint hides on hover — feels like it was never there */
+.logo-wrap.hovered ~ .title-block ~ .divider ~ .entry-hint,
+.logo-wrap.hovered ~ * .entry-hint { opacity: 0 !important; }
+
+/* ── EXIT FLASH ── */
+.flash {
+  position: fixed; inset: 0;
+  background: rgba(14, 4, 10, .0);
+  pointer-events: none;
+  opacity: 0; z-index: 500;
+  transition: opacity .08s ease;
 }
 .flash.go { opacity: 1; }
 
 /* ── FOOTER ── */
 .footer {
-  position: fixed;
-  bottom: 1.25rem;
-  left: 0; right: 0;
+  position: fixed; bottom: 1.4rem; left: 0; right: 0;
   text-align: center;
   font-family: 'Cinzel', serif;
-  font-size: 8px;
-  letter-spacing: 0.22em;
-  color: rgba(206,184,136,0.18);
+  font-size: 7.5px; letter-spacing: .26em;
+  color: rgba(206,184,136,.16);
   text-transform: uppercase;
   opacity: 0;
-  animation: rise 1.8s ease 1s both;
+  animation: fadeSlide 2s ease 1.1s both;
 }
 </style>
 </head>
 <body>
 
-<div class="bg"></div>
-<div class="top-rule"></div>
-<div class="flash" id="flash"></div>
+<div class="bg" aria-hidden="true"></div>
+<div class="top-rule" aria-hidden="true"></div>
+<div class="flash" id="flash" aria-hidden="true"></div>
 
-<main class="page">
+<main class="page" role="main">
 
-  <p class="kicker">Kappa Alpha Order &nbsp;·&nbsp; Gamma Eta Chapter</p>
+  <p class="kicker" aria-label="Kappa Alpha Order, Gamma Eta Chapter">
+    Kappa Alpha Order &nbsp;·&nbsp; Gamma Eta Chapter
+  </p>
 
   <div class="logo-wrap" id="logo-wrap">
-    <!--
-      Point src at your SVG file.
-      If it's in the same folder: src="ka-logo.svg"
-      If it's in an assets folder: src="assets/ka-logo.svg"
-    -->
+
     <img
       src="ka-logo.svg"
-      alt="Kappa Alpha Gamma Eta crest"
+      alt="Kappa Alpha Gamma Eta chapter crest"
+      class="logo-img"
       id="logo-img"
       draggable="false"
+      onload="document.getElementById('logo-img').style.display='block'"
+      onerror="this.style.display='none';document.querySelector('.logo-fallback').style.display='block'"
     >
 
-    <!-- Zero-UI secret button over the swords -->
+    <!-- Premium monogram fallback if SVG missing -->
+    <div class="logo-fallback" aria-hidden="true">ΚΑ</div>
+
+    <!-- Secret entrance button — sword zone on desktop, full crest on mobile -->
     <button
       class="sword-btn"
       id="sword-btn"
-      aria-label="Enter treasury dashboard"
+      aria-label="Enter the KA Treasury dashboard"
+      tabindex="0"
     ></button>
+
   </div>
 
   <div class="title-block">
@@ -252,48 +327,77 @@ html, body {
     <p class="subtitle">Florida State University &nbsp;·&nbsp; 2025–2026</p>
   </div>
 
-  <div class="divider">
+  <div class="divider" aria-hidden="true">
     <div class="divider-line"></div>
-    <div class="divider-pip"></div>
+    <div class="divider-diamond"></div>
     <div class="divider-line"></div>
   </div>
 
+  <p class="entry-hint" aria-hidden="true">Access hidden within the crest</p>
+
 </main>
 
-<footer class="footer">Dieu et les Dames &nbsp;·&nbsp; Est. 1865</footer>
+<footer class="footer" aria-label="Chapter motto and founding year">
+  Dieu et les Dames &nbsp;·&nbsp; Est. 1865
+</footer>
 
 <script>
 'use strict';
 
-const wrap  = document.getElementById('logo-wrap');
-const btn   = document.getElementById('sword-btn');
-const flash = document.getElementById('flash');
+const wrap    = document.getElementById('logo-wrap');
+const btn     = document.getElementById('sword-btn');
+const flash   = document.getElementById('flash');
+const page    = document.querySelector('.page');
+let entered   = false;
 
-// Gold shift on hover — no rings, no labels, nothing else
+/* ── HOVER — gold shift + subtle scale ── */
 btn.addEventListener('mouseenter', () => wrap.classList.add('hovered'));
 btn.addEventListener('mouseleave', () => wrap.classList.remove('hovered'));
 
+/* ── TOUCH — activate hovered state briefly on tap ── */
+btn.addEventListener('touchstart', () => wrap.classList.add('hovered'), { passive: true });
+btn.addEventListener('touchend',   () => {
+  setTimeout(() => wrap.classList.remove('hovered'), 400);
+}, { passive: true });
+
+/* ── ENTER DASHBOARD ── */
 function enterDashboard() {
-  flash.classList.add('go');
+  if (entered) return;
+  entered = true;
 
-  // Fade out smoothly
-  const page = document.querySelector('.page');
-  page.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
-  page.style.opacity = '0';
-  page.style.transform = 'scale(1.02)';
+  // 1. Warm the logo gold
+  wrap.classList.remove('hovered');
+  wrap.classList.add('entering');
 
+  // 2. After 280ms begin full page fade
   setTimeout(() => {
-    // ← swap this for your actual dashboard filename
+    page.style.transition = 'opacity .5s ease, transform .5s ease';
+    page.style.opacity    = '0';
+    page.style.transform  = 'scale(1.015)';
+    flash.classList.add('go');
+  }, 280);
+
+  // 3. Navigate
+  setTimeout(() => {
     window.location.href = 'dashboard.html';
-  }, 460);
+  }, 820);
 }
 
 btn.addEventListener('click', enterDashboard);
 
-// Optional: Enter key also works
+/* Keyboard: Enter or Space */
 document.addEventListener('keydown', e => {
-  if (e.key === 'Enter') enterDashboard();
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault();
+    enterDashboard();
+  }
 });
+
+/* Hide the hint the moment any interaction occurs */
+btn.addEventListener('mouseenter', () => {
+  const hint = document.querySelector('.entry-hint');
+  if (hint) hint.style.opacity = '0';
+}, { once: true });
 </script>
 
 </body>
