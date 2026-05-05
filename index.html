@@ -30,6 +30,17 @@ html,body{height:100%;font-family:var(--font-body);background:var(--bg);color:va
 
 
 /* ── INTRO EXPERIENCE ── */
+.intro-screen{position:fixed;inset:0;z-index:1200;display:grid;place-items:center;padding:1.5rem;background:radial-gradient(circle at 15% 10%,rgba(231,198,120,.24),transparent 42%),radial-gradient(circle at 80% 80%,rgba(158,34,53,.22),transparent 40%),linear-gradient(145deg,#1b0a10,#0f060b 58%,#26100f);transition:opacity .6s ease,visibility .6s ease}
+.intro-screen.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.intro-glow{position:absolute;width:min(80vw,760px);height:min(80vw,760px);border-radius:50%;background:radial-gradient(circle,rgba(184,154,74,.32),rgba(184,154,74,0) 68%);filter:blur(8px);animation:pulseGlow 4.5s ease-in-out infinite}
+.intro-card{position:relative;max-width:620px;width:100%;text-align:center;background:linear-gradient(160deg,rgba(255,255,255,.96),rgba(250,246,236,.93));border:1px solid rgba(184,154,74,.46);border-radius:30px;padding:2.6rem 2.2rem;backdrop-filter:blur(8px);box-shadow:0 30px 64px rgba(0,0,0,.35);animation:fadeUp .8s ease both}
+.intro-logo{width:min(54vw,280px);height:auto;display:block;margin:0 auto 1rem;filter:drop-shadow(0 10px 24px rgba(125,37,53,.28))}
+.logo-frame{display:inline-flex;align-items:center;justify-content:center;width:min(54vw,280px);margin:0 auto 1rem}
+.logo-fallback{width:100%;height:auto;display:block}
+.intro-kicker{letter-spacing:.18em;text-transform:uppercase;font-size:10px;color:var(--gold-2);font-weight:600;margin-bottom:.5rem}
+.intro-card h1{font-family:var(--font-display);font-size:clamp(1.7rem,4vw,2.6rem);color:var(--crimson-2);margin-bottom:.8rem}
+.intro-copy{max-width:48ch;margin:0 auto 1.4rem;color:#4f4030;font-size:13px}
+.intro-cta{font-size:12px;padding:.8rem 1.3rem;box-shadow:0 14px 26px rgba(125,37,53,.32)}
 .intro-screen{position:fixed;inset:0;z-index:1200;display:grid;place-items:center;padding:1.5rem;background:radial-gradient(circle at 20% 20%,rgba(184,154,74,.24),transparent 46%),linear-gradient(145deg,#2b0f16,#14070b 56%,#27110f);transition:opacity .6s ease,visibility .6s ease}
 .intro-screen.hidden{opacity:0;visibility:hidden;pointer-events:none}
 .intro-glow{position:absolute;width:min(80vw,760px);height:min(80vw,760px);border-radius:50%;background:radial-gradient(circle,rgba(184,154,74,.32),rgba(184,154,74,0) 68%);filter:blur(8px);animation:pulseGlow 4.5s ease-in-out infinite}
@@ -327,6 +338,7 @@ tr.drag-over td{border-top:2px solid var(--teal)}
   <div class="intro-glow"></div>
   <div class="intro-card">
     <div class="logo-frame intro-logo" role="img" aria-label="Kappa Alpha Gamma Eta logo">
+      <img src="assets/ka-logo-fsu.svg" alt="Kappa Alpha Gamma Eta logo" class="logo-fallback">
       <object class="logo-object" data="assets/ka-logo.pdf" type="application/pdf">
         <img src="assets/ka-logo-fsu.svg" alt="Kappa Alpha Gamma Eta logo" class="logo-fallback">
       </object>
@@ -415,6 +427,7 @@ tr.drag-over td{border-top:2px solid var(--teal)}
 <div class="layout">
   <aside class="sidebar">
     <div class="sidebar-brand">
+      <img src="assets/ka-logo-fsu.svg" alt="KA logo" class="sidebar-logo">
       <object class="sidebar-logo" data="assets/ka-logo.pdf" type="application/pdf" aria-label="KA logo">
         <img src="assets/ka-logo-fsu.svg" alt="KA logo" class="logo-fallback">
       </object>
