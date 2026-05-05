@@ -6,144 +6,213 @@
 <title>KA Treasury · Gamma Eta</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,300;1,300;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Cormorant+Garamond:ital,wght@0,300;1,300&display=swap" rel="stylesheet">
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --garnet:#782F40;
-  --garnet-dark:#4A1A26;
-  --garnet-deeper:#1e0810;
-  --gold:#CEB888;
-  --gold-light:#E8D5A3;
-  --gold-dim:#9A8352;
-  --cream:#F5F0E8;
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --gold: #CEB888;
+  --gold-dim: #9A8352;
+  --cream: #F5F0E8;
 }
-html,body{
-  height:100%;
-  font-family:'Cormorant Garamond',Georgia,serif;
-  background:var(--garnet-deeper);
-  color:var(--cream);
-  overflow:hidden;
+
+html, body {
+  height: 100%;
+  background: #130610;
+  overflow: hidden;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  color: var(--cream);
 }
-.bg{
-  position:fixed;inset:0;z-index:0;
+
+/* Deep garnet-to-black background */
+.bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
   background:
-    radial-gradient(ellipse 90% 55% at 50% 10%,rgba(120,47,64,0.5) 0%,transparent 70%),
-    radial-gradient(ellipse 70% 45% at 50% 100%,rgba(74,26,38,0.65) 0%,transparent 65%),
-    linear-gradient(170deg,#130610 0%,#2a0c14 45%,#130610 100%);
+    radial-gradient(ellipse 85% 50% at 50% 5%, rgba(120,47,64,0.48) 0%, transparent 68%),
+    radial-gradient(ellipse 65% 40% at 50% 100%, rgba(74,26,38,0.6) 0%, transparent 62%),
+    linear-gradient(170deg, #130610 0%, #2a0c14 48%, #130610 100%);
 }
-.top-rule{
-  position:fixed;top:0;left:0;right:0;height:2px;z-index:10;
-  background:linear-gradient(90deg,transparent,var(--gold-dim) 30%,var(--gold) 50%,var(--gold-dim) 70%,transparent);
+
+/* Gold hairline at top */
+.top-rule {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  z-index: 10;
+  background: linear-gradient(90deg, transparent 5%, var(--gold-dim) 35%, var(--gold) 50%, var(--gold-dim) 65%, transparent 95%);
 }
-.page{
-  position:relative;z-index:1;height:100vh;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:2rem;gap:0;
-  animation:fadeIn 1.4s ease both;
+
+.page {
+  position: relative;
+  z-index: 1;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  animation: rise 1.2s cubic-bezier(0.22, 0.8, 0.36, 1) both;
 }
-@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-.kicker{
-  font-family:'Cinzel',serif;
-  font-size:clamp(8px,1.1vw,10px);
-  letter-spacing:0.32em;
-  color:var(--gold-dim);
-  text-transform:uppercase;
-  margin-bottom:2.2rem;
-  opacity:0;
-  animation:fadeIn 1s ease 0.4s both;
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
 }
-.logo-wrap{
-  position:relative;
-  width:clamp(200px,26vw,320px);
-  opacity:0;
-  animation:logoRise 1.3s cubic-bezier(0.22,0.8,0.36,1) 0.1s both;
-  margin-bottom:2rem;
-  user-select:none;
+
+/* Kicker above logo */
+.kicker {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(8px, 1vw, 10px);
+  letter-spacing: 0.34em;
+  color: var(--gold-dim);
+  text-transform: uppercase;
+  margin-bottom: 2rem;
+  opacity: 0;
+  animation: rise 1s ease 0.35s both;
 }
-@keyframes logoRise{
-  from{opacity:0;transform:scale(0.92) translateY(20px)}
-  to{opacity:1;transform:scale(1) translateY(0)}
+
+/* ── LOGO ── */
+.logo-wrap {
+  position: relative;
+  width: clamp(190px, 24vw, 300px);
+  margin-bottom: 2rem;
+  opacity: 0;
+  animation: logoUp 1.2s cubic-bezier(0.22, 0.8, 0.36, 1) 0.08s both;
 }
-.logo-wrap svg{
-  width:100%;height:auto;display:block;pointer-events:none;
-  fill:rgba(245,240,232,0.92);
-  filter:drop-shadow(0 0 32px rgba(206,184,136,0.12)) drop-shadow(0 4px 18px rgba(0,0,0,0.75));
-  transition:fill 0.45s ease,filter 0.45s ease;
+
+@keyframes logoUp {
+  from { opacity: 0; transform: scale(0.93) translateY(18px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
 }
-.logo-wrap.hovered svg{
-  fill:var(--gold-light);
-  filter:drop-shadow(0 0 48px rgba(206,184,136,0.45)) drop-shadow(0 4px 18px rgba(0,0,0,0.65));
+
+.logo-wrap img {
+  width: 100%;
+  height: auto;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+  /* Invert to white, then add subtle glow */
+  filter:
+    brightness(0) invert(1)
+    drop-shadow(0 0 28px rgba(206,184,136,0.10))
+    drop-shadow(0 6px 20px rgba(0,0,0,0.8));
+  transition: filter 0.5s ease;
 }
-.sword-btn{
-  position:absolute;
-  bottom:6%;left:5%;right:5%;
-  height:40%;
-  cursor:crosshair;
-  background:transparent;border:none;outline:none;
-  border-radius:50% 50% 44% 44%;
-  z-index:10;
+
+/* On sword hover: warm gold shift — no ring, no border, just color */
+.logo-wrap.hovered img {
+  filter:
+    brightness(0) saturate(100%)
+    invert(87%) sepia(22%) saturate(420%) hue-rotate(338deg) brightness(106%)
+    drop-shadow(0 0 40px rgba(206,184,136,0.38))
+    drop-shadow(0 6px 20px rgba(0,0,0,0.7));
 }
-.sword-btn:focus-visible{outline:1px solid rgba(206,184,136,0.35)}
-.sword-btn::after{
-  content:'';
-  position:absolute;inset:12% 8%;
-  border-radius:50%;
-  border:1px solid rgba(206,184,136,0);
-  transition:border-color 0.35s ease,box-shadow 0.35s ease;
+
+/* ── SWORD HITZONE ── */
+/*
+  The swords in your logo sit in the lower ~40% of the image.
+  This invisible button covers exactly that zone.
+  No visual feedback except the logo color shift above.
+*/
+.sword-btn {
+  position: absolute;
+  bottom: 4%;
+  left: 4%;
+  right: 4%;
+  height: 42%;
+  background: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  /* No ::before, no ::after, no rings. Clean. */
 }
-.sword-btn:hover::after{
-  border-color:rgba(206,184,136,0.28);
-  box-shadow:0 0 20px rgba(206,184,136,0.08);
-  animation:swordPulse 2s ease infinite;
+
+.sword-btn:focus-visible {
+  /* Accessibility only — keyboard users see a faint outline */
+  outline: 1px solid rgba(206,184,136,0.3);
+  outline-offset: 2px;
 }
-@keyframes swordPulse{
-  0%,100%{transform:scale(1);opacity:1}
-  50%{transform:scale(1.06);opacity:0.55}
+
+/* ── TITLE ── */
+.title-block {
+  text-align: center;
+  opacity: 0;
+  animation: rise 1s ease 0.5s both;
 }
-.title-block{
-  text-align:center;opacity:0;
-  animation:fadeIn 1s ease 0.55s both;
+
+.title {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(18px, 2.8vw, 34px);
+  font-weight: 600;
+  color: var(--cream);
+  letter-spacing: 0.08em;
+  line-height: 1.1;
+  margin-bottom: 0.45rem;
 }
-.title{
-  font-family:'Cinzel',serif;
-  font-size:clamp(20px,3vw,38px);
-  font-weight:600;color:var(--cream);
-  letter-spacing:0.07em;line-height:1.1;
-  margin-bottom:0.5rem;
+
+.title span { color: var(--gold); }
+
+.subtitle {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(12px, 1.4vw, 16px);
+  font-weight: 300;
+  font-style: italic;
+  color: rgba(206,184,136,0.45);
+  letter-spacing: 0.05em;
 }
-.title span{color:var(--gold)}
-.subtitle{
-  font-family:'Cormorant Garamond',serif;
-  font-size:clamp(13px,1.5vw,17px);
-  font-weight:300;font-style:italic;
-  color:rgba(206,184,136,0.5);
-  letter-spacing:0.05em;
+
+/* ── DIVIDER ── */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-top: 1.5rem;
+  width: clamp(140px, 20vw, 240px);
+  opacity: 0;
+  animation: rise 1s ease 0.65s both;
 }
-.divider{
-  display:flex;align-items:center;gap:0.9rem;
-  margin:1.6rem 0 0;
-  width:clamp(160px,22vw,280px);
-  opacity:0;animation:fadeIn 1s ease 0.7s both;
+
+.divider-line {
+  flex: 1; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim));
 }
-.divider-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--gold-dim))}
-.divider-line:last-child{background:linear-gradient(90deg,var(--gold-dim),transparent)}
-.divider-diamond{width:5px;height:5px;background:var(--gold-dim);transform:rotate(45deg);flex-shrink:0}
-.flash{
-  position:fixed;inset:0;
-  background:rgba(206,184,136,0.06);
-  pointer-events:none;opacity:0;z-index:200;
-  transition:opacity 0.12s ease;
+.divider-line:last-child {
+  background: linear-gradient(90deg, var(--gold-dim), transparent);
 }
-.flash.go{opacity:1}
-.footer{
-  position:fixed;bottom:1.4rem;left:0;right:0;
-  text-align:center;
-  font-family:'Cinzel',serif;
-  font-size:8px;letter-spacing:0.24em;
-  color:rgba(206,184,136,0.22);
-  text-transform:uppercase;
-  opacity:0;animation:fadeIn 1.6s ease 1.1s both;
+.divider-pip {
+  width: 4px; height: 4px;
+  background: var(--gold-dim);
+  transform: rotate(45deg);
+  flex-shrink: 0;
+}
+
+/* ── PAGE EXIT ── */
+.flash {
+  position: fixed;
+  inset: 0;
+  background: rgba(245,240,232,0.04);
+  pointer-events: none;
+  opacity: 0;
+  z-index: 300;
+  transition: opacity 0.15s ease;
+}
+.flash.go { opacity: 1; }
+
+/* ── FOOTER ── */
+.footer {
+  position: fixed;
+  bottom: 1.25rem;
+  left: 0; right: 0;
+  text-align: center;
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  letter-spacing: 0.22em;
+  color: rgba(206,184,136,0.18);
+  text-transform: uppercase;
+  opacity: 0;
+  animation: rise 1.8s ease 1s both;
 }
 </style>
 </head>
@@ -159,139 +228,22 @@ html,body{
 
   <div class="logo-wrap" id="logo-wrap">
     <!--
-      Inline SVG recreation of the KA Gamma Eta crest.
-      ViewBox: 0 0 500 560
-      Layout: KA letters top, crossed sabers middle, GAMMA ETA bottom.
+      Point src at your SVG file.
+      If it's in the same folder: src="ka-logo.svg"
+      If it's in an assets folder: src="assets/ka-logo.svg"
     -->
-    <svg viewBox="0 0 500 560" xmlns="http://www.w3.org/2000/svg" aria-label="Kappa Alpha Gamma Eta crest">
+    <img
+      src="ka-logo.svg"
+      alt="Kappa Alpha Gamma Eta crest"
+      id="logo-img"
+      draggable="false"
+    >
 
-      <!-- ══════════════════════════════
-           K  (left letter, x: 30–195)
-      ══════════════════════════════ -->
-
-      <!-- Crown finials on top of K -->
-      <path d="
-        M 65 10 C 65 4 70 0 76 3 C 80 5 82 10 82 16
-        M 95 10 C 95 4 100 0 106 3 C 110 5 112 10 112 16
-        M 130 10 C 130 4 135 0 141 3 C 145 5 147 10 147 16
-      " stroke="currentColor" stroke-width="6" fill="none" stroke-linecap="round"/>
-      <!-- Crown base bar -->
-      <rect x="56" y="16" width="100" height="12" rx="3"/>
-
-      <!-- K vertical stroke -->
-      <rect x="56" y="28" width="32" height="148" rx="3"/>
-
-      <!-- K upper diagonal arm -->
-      <path d="M 88 28 L 178 102 L 178 130 L 88 58 Z"/>
-      <!-- K lower diagonal arm -->
-      <path d="M 88 98 L 88 128 L 178 200 L 178 170 Z"/>
-      <!-- K notch fill at the junction -->
-      <rect x="88" y="92" width="16" height="38" rx="2"/>
-
-      <!-- K bottom serif -->
-      <rect x="42" y="166" width="62" height="14" rx="3"/>
-      <!-- K top serif -->
-      <rect x="42" y="28" width="56" height="14" rx="3"/>
-
-
-      <!-- ══════════════════════════════
-           A  (right letter, x: 270–445)
-      ══════════════════════════════ -->
-
-      <!-- Crown finials on top of A -->
-      <path d="
-        M 330 10 C 330 4 335 0 341 3 C 345 5 347 10 347 16
-        M 357 10 C 357 4 362 0 368 3 C 372 5 374 10 374 16
-        M 384 10 C 384 4 389 0 395 3 C 399 5 401 10 401 16
-      " stroke="currentColor" stroke-width="6" fill="none" stroke-linecap="round"/>
-      <!-- Crown base bar -->
-      <rect x="322" y="16" width="100" height="12" rx="3"/>
-
-      <!-- A left diagonal stroke -->
-      <path d="M 300 180 L 358 28 L 382 28 L 322 180 Z"/>
-      <!-- A right diagonal stroke -->
-      <path d="M 382 28 L 406 28 L 444 180 L 418 180 Z"/>
-      <!-- A crossbar -->
-      <rect x="308" y="116" width="128" height="24" rx="3"/>
-      <!-- A bottom-left serif -->
-      <rect x="288" y="168" width="54" height="14" rx="3"/>
-      <!-- A bottom-right serif -->
-      <rect x="406" y="168" width="54" height="14" rx="3"/>
-
-
-      <!-- ══════════════════════════════
-           CROSSED SABERS
-           Left blade: top-left → bottom-right
-           Right blade: top-right → bottom-left
-           They cross at center (~250, 330)
-      ══════════════════════════════ -->
-
-      <!-- LEFT SABER -->
-      <!-- Blade — thin tapered path from upper-left sweep to tip lower-right -->
-      <path d="
-        M 22 248
-        C 80 270, 170 310, 250 336
-        C 330 362, 420 390, 462 410
-        L 466 400
-        C 424 380, 334 352, 252 326
-        C 170 300, 80 260, 22 236
-        Z
-      "/>
-      <!-- Guard -->
-      <path d="
-        M 218 316 C 222 306, 232 300, 244 305
-        C 256 310, 260 322, 258 332
-        C 250 330, 242 326, 230 322 Z
-      "/>
-      <!-- Grip -->
-      <path d="M 22 248 C 18 240, 12 230, 8 220 L 16 215 C 18 226, 22 238, 28 244 Z"/>
-      <!-- Pommel -->
-      <ellipse cx="10" cy="212" rx="12" ry="16"/>
-
-      <!-- RIGHT SABER -->
-      <!-- Blade -->
-      <path d="
-        M 478 248
-        C 420 270, 330 310, 250 336
-        C 170 362, 80 390, 38 410
-        L 34 400
-        C 76 380, 166 352, 248 326
-        C 330 300, 420 260, 478 236
-        Z
-      "/>
-      <!-- Guard -->
-      <path d="
-        M 282 316 C 278 306, 268 300, 256 305
-        C 244 310, 240 322, 242 332
-        C 250 330, 258 326, 270 322 Z
-      "/>
-      <!-- Grip -->
-      <path d="M 478 248 C 482 240, 488 230, 492 220 L 484 215 C 482 226, 478 238, 472 244 Z"/>
-      <!-- Pommel -->
-      <ellipse cx="490" cy="212" rx="12" ry="16"/>
-
-
-      <!-- ══════════════════════════════
-           GAMMA ETA  text
-      ══════════════════════════════ -->
-      <text
-        x="250" y="540"
-        text-anchor="middle"
-        font-family="'Cinzel', 'Times New Roman', serif"
-        font-size="40"
-        font-weight="400"
-        letter-spacing="16"
-        dx="-8"
-      >GAMMA ETA</text>
-
-    </svg>
-
-    <!-- The only entrance: an invisible hitzone over the crossed swords -->
+    <!-- Zero-UI secret button over the swords -->
     <button
       class="sword-btn"
       id="sword-btn"
       aria-label="Enter treasury dashboard"
-      onclick="enterDashboard()"
     ></button>
   </div>
 
@@ -302,7 +254,7 @@ html,body{
 
   <div class="divider">
     <div class="divider-line"></div>
-    <div class="divider-diamond"></div>
+    <div class="divider-pip"></div>
     <div class="divider-line"></div>
   </div>
 
@@ -312,27 +264,33 @@ html,body{
 
 <script>
 'use strict';
+
 const wrap  = document.getElementById('logo-wrap');
 const btn   = document.getElementById('sword-btn');
 const flash = document.getElementById('flash');
 
+// Gold shift on hover — no rings, no labels, nothing else
 btn.addEventListener('mouseenter', () => wrap.classList.add('hovered'));
 btn.addEventListener('mouseleave', () => wrap.classList.remove('hovered'));
 
 function enterDashboard() {
   flash.classList.add('go');
-  wrap.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
-  wrap.style.opacity = '0';
-  wrap.style.transform = 'scale(1.04)';
-  const tb = document.querySelector('.title-block');
-  if (tb) { tb.style.transition = 'opacity 0.3s ease'; tb.style.opacity = '0'; }
+
+  // Fade out smoothly
+  const page = document.querySelector('.page');
+  page.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+  page.style.opacity = '0';
+  page.style.transform = 'scale(1.02)';
 
   setTimeout(() => {
-    // ← change this to your actual dashboard filename
+    // ← swap this for your actual dashboard filename
     window.location.href = 'dashboard.html';
-  }, 480);
+  }, 460);
 }
 
+btn.addEventListener('click', enterDashboard);
+
+// Optional: Enter key also works
 document.addEventListener('keydown', e => {
   if (e.key === 'Enter') enterDashboard();
 });
