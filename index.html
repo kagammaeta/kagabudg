@@ -28,6 +28,31 @@
 }
 html,body{height:100%;font-family:var(--font-body);background:var(--bg);color:var(--text);font-size:13px;line-height:1.55;-webkit-font-smoothing:antialiased}
 
+
+/* ── INTRO EXPERIENCE ── */
+.intro-screen{position:fixed;inset:0;z-index:1200;display:grid;place-items:center;padding:1rem;background:#782f36;transition:opacity .6s ease,visibility .6s ease}
+.intro-screen.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.intro-glow{position:absolute;width:min(86vw,860px);height:min(86vw,860px);border-radius:50%;background:radial-gradient(circle,rgba(206,184,136,.16),rgba(206,184,136,0) 68%);filter:blur(18px);animation:pulseGlow 5s ease-in-out infinite}
+.intro-card{position:relative;max-width:760px;width:100%;text-align:center;padding:1rem;animation:fadeUp .8s ease both}
+.intro-logo{width:min(80vw,640px);height:auto;display:block;margin:0 auto;filter:drop-shadow(0 16px 36px rgba(38,10,16,.45))}
+.logo-frame{display:inline-flex;align-items:center;justify-content:center;width:min(80vw,640px);margin:0 auto}
+.logo-fallback{width:100%;height:auto;display:block}
+.secret-enter{position:absolute;left:50%;top:62%;transform:translate(-50%,-50%);width:130px;height:38px;border:none;background:transparent;cursor:pointer;border-radius:999px;opacity:.08;transition:opacity .2s ease,box-shadow .2s ease}
+.secret-enter:hover,.secret-enter:focus-visible{opacity:.24;box-shadow:0 0 0 2px rgba(206,184,136,.5),0 0 24px rgba(206,184,136,.45);outline:none}
+
+
+
+
+.sidebar-logo{width:56px;height:auto;display:block;margin-bottom:.55rem;filter:drop-shadow(0 8px 10px rgba(0,0,0,.2))}
+.layout{opacity:0;transform:translateY(8px);transition:opacity .45s ease,transform .45s ease}
+.layout.app-ready{opacity:1;transform:none}
+.card,.stat-card,.btn,.nav-item,.month-tab,.sem-tab{transition:all .22s ease}
+.card:hover,.stat-card:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(26,23,20,.08)}
+.btn:active{transform:translateY(1px) scale(.99)}
+input.ed:focus,input.ed-name:focus,.snap-input:focus{transform:translateY(-1px)}
+@keyframes pulseGlow{0%,100%{transform:scale(1);opacity:.8}50%{transform:scale(1.06);opacity:1}}
+@media (max-width:760px){.intro-card{padding:2rem 1.2rem}.sidebar-logo{width:44px}}
+
 /* ── EDIT-MODE MODAL ── */
 .overlay{position:fixed;inset:0;background:rgba(26,23,20,.55);display:flex;align-items:center;justify-content:center;z-index:1000;backdrop-filter:blur(3px)}
 .modal-box{background:var(--surface);border-radius:var(--r-xl);border:1px solid var(--border);width:360px;padding:2.5rem 2rem;text-align:center}
@@ -298,6 +323,17 @@ tr.drag-over td{border-top:2px solid var(--teal)}
 }
 </style>
 
+
+<div id="intro-screen" class="intro-screen" aria-label="Welcome screen">
+  <div class="intro-glow"></div>
+  <div class="intro-card">
+    <div class="logo-frame intro-logo" role="img" aria-label="Kappa Alpha KA with swords logo">
+      <img src="assets/ka-logo-fsu.svg" alt="Kappa Alpha KA with swords logo" class="logo-fallback">
+    </div>
+    <button id="enter-dashboard" class="secret-enter" aria-label="Enter dashboard"></button>
+  </div>
+</div>
+
 <!-- EDIT-MODE MODAL (UI protection only — not real security) -->
 <div class="overlay" id="lock-modal">
   <div class="modal-box">
@@ -375,6 +411,7 @@ tr.drag-over td{border-top:2px solid var(--teal)}
 <div class="layout">
   <aside class="sidebar">
     <div class="sidebar-brand">
+      <img src="assets/ka-logo-fsu.svg" alt="KA logo" class="sidebar-logo">
       <div class="sidebar-monogram">ΚΑ</div>
       <div class="sidebar-title">Kappa Alpha Order</div>
       <div class="sidebar-sub" id="sidebar-sub-text">Florida State</div>
@@ -1871,6 +1908,17 @@ function refreshAll() {
 
 /* ── INIT ── */
 (function init() {
+  const intro = document.getElementById('intro-screen');
+  const layout = document.querySelector('.layout');
+  const enterBtn = document.getElementById('enter-dashboard');
+  const hasEntered = sessionStorage.getItem('ka-intro-seen') === '1';
+  function enterApp(){
+    intro?.classList.add('hidden');
+    layout?.classList.add('app-ready');
+    sessionStorage.setItem('ka-intro-seen','1');
+  }
+  if (hasEntered) { enterApp(); }
+  enterBtn?.addEventListener('click', enterApp);
   const ch = semConfig.chapter || 'Florida State';
   document.getElementById('sidebar-sub-text').textContent = ch;
   document.title = 'KA Treasury · ' + ch;

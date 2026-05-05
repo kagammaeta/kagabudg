@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 700" role="img" aria-labelledby="title desc">
+  <title id="title">KA Swords Mark</title>
+  <desc id="desc">KA monogram with crossed swords using FSU garnet and gold.</desc>
+
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <text x="460" y="285" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="300" font-weight="700" letter-spacing="8" fill="#ceb888">KA</text>
+
+    <path d="M95 385 C 250 565, 670 565, 825 385" stroke="#ceb888" stroke-width="17"/>
+    <path d="M145 590 Q460 560 775 590" stroke="#ceb888" stroke-width="14"/>
+    <path d="M775 590 Q460 650 145 590" stroke="#ceb888" stroke-width="11"/>
+
+    <circle cx="145" cy="590" r="12" fill="#ceb888"/>
+    <circle cx="775" cy="590" r="12" fill="#ceb888"/>
+
+    <path d="M178 596c3 22 21 40 52 40 30 0 48-17 52-40" stroke="#ceb888" stroke-width="9"/>
+    <path d="M638 596c3 22 21 40 52 40 30 0 48-17 52-40" stroke="#ceb888" stroke-width="9"/>
+  </g>
+</svg>
