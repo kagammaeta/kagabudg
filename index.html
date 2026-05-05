@@ -265,10 +265,10 @@ html, body {
 /* ── EXIT FLASH ── */
 .flash {
   position: fixed; inset: 0;
-  background: rgba(14, 4, 10, .0);
+  background: #0e040a;
   pointer-events: none;
   opacity: 0; z-index: 500;
-  transition: opacity .08s ease;
+  transition: opacity .6s ease;
 }
 .flash.go { opacity: 1; }
 
@@ -369,18 +369,20 @@ function enterDashboard() {
   wrap.classList.remove('hovered');
   wrap.classList.add('entering');
 
-  // 2. After 280ms begin full page fade
+  // 2. After 240ms: fade page content out while black overlay fades in
   setTimeout(() => {
-    page.style.transition = 'opacity .5s ease, transform .5s ease';
+    page.style.transition = 'opacity .55s ease, transform .55s ease';
     page.style.opacity    = '0';
-    page.style.transform  = 'scale(1.015)';
-    flash.classList.add('go');
-  }, 280);
+    page.style.transform  = 'scale(1.012)';
+    document.querySelector('.footer').style.transition = 'opacity .4s ease';
+    document.querySelector('.footer').style.opacity = '0';
+    flash.classList.add('go'); // black overlay fades in over .6s
+  }, 240);
 
-  // 3. Navigate
+  // 3. Navigate once fully black (flash transition = .6s, start nav at .7s after fade begins)
   setTimeout(() => {
     window.location.href = 'dashboard.html';
-  }, 820);
+  }, 960);
 }
 
 btn.addEventListener('click', enterDashboard);
