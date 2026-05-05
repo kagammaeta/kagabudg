@@ -862,9 +862,9 @@ function S(){return semStore[activeSem]}
 /* ── GATE AUTH ── */
 // SHA-256 hash of the access code. The plaintext never appears in source.
 // To change: run sha256('newpassword') in console, paste result below.
-const PW_HASH = 'a6d87eb93a4b10689e4a2e0aa23ed8307ffd43bee2c961577634c0bc092c8c6b';
+const PW_HASH = '8953554e68f0b04f4f03edaf394bf0562c2454b0544812f556e6b8f8da3a34f7';
 
-// Rate limiting — 5 attempts, then 10 min lockout
+// Rate limiting — 3 attempts, then 10 min lockout
 const RATE_KEY = 'ka-gate-lock';
 function getRateState() {
   try { return JSON.parse(sessionStorage.getItem(RATE_KEY)) || {attempts:0,lockedUntil:0}; }
@@ -930,11 +930,15 @@ async function tryUnlock() {
     const gate = document.getElementById('gate');
     gate.style.transition = 'opacity .45s ease';
     gate.style.opacity = '0';
-    setTimeout(() => gate.style.display = 'none', 460);
 
+    // Reveal layout before hiding gate so toast has a target
     document.getElementById('app-layout').classList.remove('layout-locked');
     document.getElementById('save-bar').style.display = 'flex';
-    showToast('Welcome');
+
+    setTimeout(() => {
+      gate.style.display = 'none';
+      showToast('Welcome');
+    }, 460);
   } else {
     // Wrong — increment attempt counter
     state.attempts = (state.attempts || 0) + 1;
