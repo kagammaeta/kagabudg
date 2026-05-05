@@ -590,6 +590,9 @@ tr.drag-over td{border-top:2px solid var(--teal)}
 ">
   <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent 5%,rgba(154,131,82,.6) 35%,#CEB888 50%,rgba(154,131,82,.6) 65%,transparent 95%)"></div>
 
+  <!-- Invisible override zone — top-left corner, triple click clears lockout -->
+  <div id="override-zone" style="position:absolute;top:0;left:0;width:48px;height:48px;cursor:default;z-index:10" onclick="cornerClick()"></div>
+
   <p style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:.32em;color:rgba(154,131,82,.7);text-transform:uppercase;margin-bottom:2rem">Kappa Alpha Order &nbsp;·&nbsp; Gamma Eta</p>
 
   <div style="font-family:'Cinzel',serif;font-size:28px;font-weight:600;color:#CEB888;letter-spacing:.06em;line-height:1;margin-bottom:.4rem">ΚΑ</div>
@@ -859,7 +862,7 @@ function S(){return semStore[activeSem]}
 /* ── GATE AUTH ── */
 // SHA-256 hash of the access code. The plaintext never appears in source.
 // To change: run sha256('newpassword') in console, paste result below.
-const PW_HASH = 'd2675c478d2ce4c97607e30cb39181e633d9b51caf7d3443180fae3911119297';
+const PW_HASH = 'a6d87eb93a4b10689e4a2e0aa23ed8307ffd43bee2c961577634c0bc092c8c6b';
 
 // Rate limiting — 5 attempts, then 10 min lockout
 const RATE_KEY = 'ka-gate-lock';
@@ -874,6 +877,26 @@ function setRateState(s) {
 async function sha256(str) {
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
   return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+// Triple-click top-left corner override — clears lockout silently
+let _cornerClicks = 0, _cornerTimer = null;
+function cornerClick() {
+  _cornerClicks++;
+  clearTimeout(_cornerTimer);
+  _cornerTimer = setTimeout(() => { _cornerClicks = 0; }, 800);
+  if (_cornerClicks >= 3) {
+    _cornerClicks = 0;
+    setRateState({attempts:0, lockedUntil:0});
+    const inp = document.getElementById('pw-input');
+    const btn = document.getElementById('gate-btn');
+    const errEl = document.getElementById('pw-err');
+    inp.disabled = false;
+    btn.disabled = false;
+    btn.textContent = 'Enter';
+    errEl.textContent = '';
+    inp.focus();
+  }
 }
 
 async function tryUnlock() {
@@ -915,12 +938,12 @@ async function tryUnlock() {
   } else {
     // Wrong — increment attempt counter
     state.attempts = (state.attempts || 0) + 1;
-    if (state.attempts >= 5) {
+    if (state.attempts >= 3) {
       state.lockedUntil = Date.now() + 10 * 60 * 1000;
       state.attempts = 0;
       errEl.textContent = 'Too many attempts — locked for 10 minutes';
     } else {
-      const left = 5 - state.attempts;
+      const left = 3 - state.attempts;
       errEl.textContent = `Incorrect — ${left} attempt${left===1?'':'s'} remaining`;
     }
     setRateState(state);
