@@ -263,9 +263,27 @@ html, body {
   background: #0e040a;
   pointer-events: none;
   opacity: 0; z-index: 500;
-  transition: opacity .6s ease;
+  transition: opacity .55s ease;
 }
 .exit-veil.go { opacity: 1; }
+
+/*
+  Dashboard iframe — preloaded silently in background.
+  Hidden behind the landing page. Revealed after animation
+  by setting z-index above the exit veil once screen is black.
+*/
+#dashboard-frame {
+  position: fixed; inset: 0; z-index: -1;
+  width: 100%; height: 100%;
+  border: none;
+  opacity: 0;
+  pointer-events: none;
+}
+#dashboard-frame.reveal {
+  z-index: 600;   /* above the exit veil */
+  opacity: 1;
+  pointer-events: auto;
+}
 
 /* ── FOOTER ── */
 .footer {
@@ -293,19 +311,14 @@ html, body {
 
   <div class="logo-wrap" id="logo-wrap">
     <img
-src="ka-logo.svg"
-  alt="Kappa Alpha Gamma Eta chapter crest"
-  class="logo-img"
-  id="logo-img"
-  draggable="false"
-  onerror="this.style.display='none';document.getElementById('logo-fallback').style.display='block'"
->
-
-<!-- Optional sword overlays for unlock animation -->
-<img src="sword-left.svg" class="sword sword-left" alt="" aria-hidden="true" draggable="false">
-<img src="sword-right.svg" class="sword sword-right" alt="" aria-hidden="true" draggable="false">
-
-<div class="logo-fallback" id="logo-fallback" aria-hidden="true">ΚΑ</div>
+      src="ka-logo.svg"
+      alt="Kappa Alpha Gamma Eta chapter crest"
+      class="logo-img"
+      id="logo-img"
+      draggable="false"
+      onerror="this.style.display='none';document.getElementById('logo-fallback').style.display='block'"
+    >
+    <div class="logo-fallback" id="logo-fallback" aria-hidden="true">ΚΑ</div>
 
     <button
       class="sword-btn"
@@ -355,39 +368,50 @@ btn.addEventListener('touchend', () => {
 }, { passive: true });
 
 /* ════════════════════════════════════════════
-   UNLOCK SEQUENCE
-   ─────────────────────────────────────────
-     0ms   surroundings fade away
-    60ms   crest begins scaling toward viewer
-            + golds up and dissolves in one
-              continuous CSS transition (950ms)
-   480ms   black veil starts rising
-  1080ms   navigate to dashboard
+   UNLOCK SEQUENCE — iframe swap approach
+
+   The dashboard is already preloaded in a hidden
+   iframe behind this page. When the animation ends
+   and the screen goes black, we reveal the iframe
+   instead of navigating — zero load flash.
+
+   Timeline:
+     0ms    surroundings fade out
+    60ms    crest scales up, golds, dissolves
+   460ms    black veil fades in (0.55s)
+   820ms    screen is fully black
+   860ms    reveal iframe behind veil
+   980ms    fade veil back out — dashboard appears
 ════════════════════════════════════════════ */
 function enterDashboard() {
   if (entered) return;
   entered = true;
 
+  const frame = document.getElementById('dashboard-frame');
   wrap.classList.remove('hovered');
 
-  /* Step 1 — text around crest fades out immediately */
+  /* Step 1 — clear surrounding text */
   page.classList.add('unlocking');
   footer.style.opacity = '0';
 
-  /* Step 2 — short pause then crest fires its animation */
-  setTimeout(() => {
-    wrap.classList.add('unlocking');
-  }, 60);
+  /* Step 2 — crest animation fires */
+  setTimeout(() => wrap.classList.add('unlocking'), 60);
 
-  /* Step 3 — black veil fades in as crest peaks */
-  setTimeout(() => {
-    exitVeil.classList.add('go');
-  }, 480);
+  /* Step 3 — black veil rises */
+  setTimeout(() => exitVeil.classList.add('go'), 460);
 
-  /* Step 4 — navigate once screen is black */
+  /* Step 4 — screen is black, swap in the iframe silently */
   setTimeout(() => {
-    window.location.href = 'dashboard.html';
-  }, 1080);
+    frame.classList.add('reveal');
+    // Give the frame one frame to paint at z-index 600
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        // Fade the veil back out to reveal the dashboard
+        exitVeil.style.transition = 'opacity .55s ease';
+        exitVeil.style.opacity = '0';
+      });
+    });
+  }, 860);
 }
 
 btn.addEventListener('click', enterDashboard);
@@ -399,5 +423,18 @@ document.addEventListener('keydown', e => {
   }
 });
 </script>
+
+<!--
+  Dashboard preloaded silently — by the time the animation
+  finishes, it's already fully loaded and ready to show.
+-->
+<iframe
+  id="dashboard-frame"
+  src="dashboard.html"
+  title="KA Treasury Dashboard"
+  aria-hidden="true"
+  tabindex="-1"
+></iframe>
+
 </body>
 </html>
